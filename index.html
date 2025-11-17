@@ -3,49 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ร้านค้าดิจิทัล - Digital Product Store</title>
+    <title>BeeSmart Digital - ร้านค้าสินค้าดิจิทัล</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode.js@0.0.1/qrcode.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
-        .product-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
-        .btn-primary { background-color: #3b82f6; border-radius: 0.5rem; padding: 0.75rem 1.5rem; color: white; transition: background-color 0.2s; }
-        .btn-primary:hover { background-color: #2563eb; }
-        .cart-item-list { max-height: 400px; overflow-y: auto; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f4f7f9; /* สีพื้นหลังอ่อน ๆ คล้าย GitHub */
+        }
+        .header-bg {
+            background-color: #ffffff; /* พื้นหลัง Header สีขาว */
+            border-bottom: 1px solid #e1e4e8; /* เส้นขอบด้านล่างบาง ๆ */
+        }
+        .main-container {
+            max-width: 1280px; /* กว้างขึ้นคล้ายหน้าจอคอมพิวเตอร์ */
+        }
+        .product-card { 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            border: 1px solid #d1d5db; /* ขอบบาง ๆ คล้ายองค์ประกอบในเว็บ */
+        }
+        .product-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
+        }
+        .btn-primary { 
+            background-color: #f6c02c; /* สีเหลืองทอง/น้ำผึ้ง */
+            border-radius: 6px; 
+            padding: 0.6rem 1.25rem; 
+            color: #1a202c; /* Text สีเข้ม */
+            font-weight: 700;
+            transition: background-color 0.2s; 
+        }
+        .btn-primary:hover { 
+            background-color: #e0ac25; 
+        }
+        .logo-text {
+            /* สีของผึ้ง (เหลืองเข้ม) */
+            color: #f6c02c;
+            /* สีของรังผึ้ง (น้ำตาลเข้ม) */
+            background-color: #3b82f6; 
+        }
+        .product-image-container {
+            height: 128px; /* Fixed height for product image area */
+            background-color: #fffbeb; /* Light yellow background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        
-        <!-- Header / Navigation -->
-        <header class="flex justify-between items-center bg-white p-4 shadow-lg rounded-xl mb-8">
-            <h1 class="text-3xl font-bold text-blue-600">Digital Shop</h1>
+    <!-- Header Area (คล้าย Navigation Bar ของ GitHub) -->
+    <header class="header-bg p-4 shadow-sm mb-6 sticky top-0 z-10">
+        <div class="main-container mx-auto flex justify-between items-center">
+            <!-- Logo with 'B' (Bee) -->
+            <div class="flex items-center space-x-2">
+                <span class="text-3xl font-extrabold px-2 rounded-lg logo-text">B</span>
+                <h1 class="text-xl font-bold text-gray-800">BeeSmart Digital</h1>
+            </div>
+
             <div class="flex items-center space-x-4">
-                <button id="cart-toggle-btn" class="relative p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                <button id="cart-toggle-btn" class="relative p-2 rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition">
+                    <!-- Cart Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
                 </button>
-                <div id="auth-status" class="text-sm font-medium text-gray-700">
-                    <span id="user-display">กำลังโหลด...</span> | 
-                    <button id="admin-view-btn" class="text-indigo-600 hover:text-indigo-800 hidden" onclick="toggleView('admin')">Admin</button>
-                    <button id="login-logout-btn" class="text-red-600 hover:text-red-800" onclick="handleAuthClick()">เข้าสู่ระบบ</button>
+
+                <!-- Auth Status and Admin/Login Button -->
+                <div id="auth-status" class="text-sm font-medium text-gray-700 flex items-center space-x-2">
+                    <span id="user-display" class="hidden sm:inline-block">กำลังโหลด...</span>
+                    <button id="admin-view-btn" class="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg hover:bg-gray-100 text-sm font-semibold hidden" onclick="toggleView('admin')">
+                        Admin
+                    </button>
+                    <button id="login-logout-btn" class="p-2 rounded-lg text-red-600 hover:text-red-800 hover:bg-gray-100 text-sm font-semibold" onclick="handleAuthClick()">
+                        เข้าสู่ระบบ
+                    </button>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Content Area -->
+    <!-- Main Content Area with Repository-like structure -->
+    <div id="app" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Navigation/Status Bar (จำลองแถบ Code/Issues/PR) -->
+        <nav class="flex space-x-4 border-b border-gray-300 mb-6 text-gray-600 font-medium">
+            <button class="py-2 px-3 border-b-2 border-blue-500 text-blue-500 transition duration-150" onclick="toggleView('shop')" id="nav-shop">
+                สินค้า (Products)
+            </button>
+            <button class="py-2 px-3 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-500 transition duration-150" onclick="toggleView('admin')" id="nav-admin">
+                ตั้งค่าผู้ดูแล (Admin)
+            </button>
+        </nav>
+
+        <!-- Main View (Shop) -->
         <main id="main-view" class="space-y-8">
-            <!-- Shop View -->
             <section id="shop-view">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">สินค้าดิจิทัลทั้งหมด</h2>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">รายการสินค้าทั้งหมด</h2>
                 <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <!-- Products will be injected here -->
                     <div class="col-span-full text-center py-12 text-gray-500" id="loading-text">กำลังโหลดสินค้า...</div>
@@ -55,19 +117,20 @@
             <!-- Checkout Modal (Hidden by default) -->
             <div id="checkout-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'checkout-modal') toggleCheckoutModal(false)">
                 <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg" onclick="event.stopPropagation()">
-                    <h3 class="text-xl font-bold mb-4 text-gray-800">ยืนยันการสั่งซื้อ</h3>
-                    <div class="space-y-3 mb-6 border p-4 rounded-lg bg-yellow-50">
-                        <p class="text-sm font-semibold text-gray-700">ยอดรวม:</p>
-                        <p class="text-3xl font-extrabold text-red-600" id="checkout-total">0.00 บาท</p>
-                        <p class="text-xs text-gray-500">หมายเหตุ: นี่คือการจำลองการชำระเงิน PromptPay กรุณากดยืนยันเมื่อโอนเงินเสร็จสิ้น</p>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">ขั้นตอนการชำระเงิน</h3>
+                    <div class="space-y-4 mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                        <p class="text-sm font-semibold text-gray-700">ยอดที่ต้องชำระ:</p>
+                        <p class="text-4xl font-extrabold text-red-600" id="checkout-total">0.00 บาท</p>
+                        <p class="text-xs text-gray-500">โอนเงินเข้า PromptPay ID: **<span id="promptpay-id-display"></span>** (จำลอง)</p>
                     </div>
 
                     <div id="qr-code-container" class="flex justify-center mb-6">
-                        <!-- QR Code will be generated here -->
-                        <div id="qrcode" class="p-2 border border-gray-300 rounded-lg"></div>
+                        <div id="qrcode" class="p-3 border-4 border-blue-500 rounded-lg bg-white shadow-md"></div>
                     </div>
+                    
+                    <p class="text-center text-sm text-gray-600 mb-4">เมื่อโอนเงินสำเร็จแล้ว กรุณากดยืนยันด้านล่าง</p>
 
-                    <button class="btn-primary w-full text-lg" id="confirm-payment-btn" onclick="simulatePaymentConfirmation()">
+                    <button class="btn-primary w-full text-lg py-3" id="confirm-payment-btn" onclick="simulatePaymentConfirmation()">
                         ยืนยันการชำระเงิน
                     </button>
                     <button class="mt-3 w-full text-gray-600 hover:text-gray-800" onclick="toggleCheckoutModal(false)">
@@ -75,7 +138,7 @@
                     </button>
                     
                     <!-- Confirmation Message -->
-                    <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4" role="alert">
+                    <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4 rounded-lg" role="alert">
                         <p class="font-bold">ชำระเงินสำเร็จ!</p>
                         <p>สินค้าดิจิทัลพร้อมดาวน์โหลดแล้ว ขอบคุณที่อุดหนุนครับ/ค่ะ</p>
                     </div>
@@ -84,8 +147,8 @@
         </main>
 
         <!-- Admin Panel View -->
-        <section id="admin-view" class="hidden p-8 bg-white rounded-xl shadow-xl">
-            <h2 class="text-3xl font-bold text-indigo-700 mb-6">แผงควบคุมผู้ดูแล (Admin Panel)</h2>
+        <section id="admin-view" class="hidden p-8 bg-white rounded-xl shadow-xl border border-gray-200">
+            <h2 class="text-3xl font-bold text-indigo-700 mb-6 border-b pb-2">แผงควบคุมผู้ดูแล (Admin Panel)</h2>
             
             <div id="admin-login-area">
                 <h3 class="text-xl font-semibold mb-3">เข้าสู่ระบบผู้ดูแล</h3>
@@ -100,10 +163,19 @@
                 <h3 class="text-2xl font-semibold mb-4 border-b pb-2">เพิ่มสินค้าใหม่</h3>
                 <form id="add-product-form" class="space-y-4">
                     <input type="text" id="p-name" placeholder="ชื่อสินค้าดิจิทัล" required class="w-full p-3 border rounded-lg">
-                    <textarea id="p-description" placeholder="รายละเอียดสินค้า" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
+                    <textarea type="text" id="p-description" placeholder="รายละเอียดสินค้า" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
                     <input type="number" id="p-price" placeholder="ราคา (บาท)" required min="1" class="w-full p-3 border rounded-lg">
                     <input type="number" id="p-stock" placeholder="จำนวนสต็อก" required min="1" class="w-full p-3 border rounded-lg">
-                    <input type="text" id="p-file-url" placeholder="ลิงก์ไฟล์ (จำลอง)" value="https://example.com/download/product-123" required class="w-full p-3 border rounded-lg">
+                    
+                    <!-- ช่องสำหรับลิงก์รูปภาพสินค้า (จำลองการอัปโหลด) -->
+                    <input type="text" id="p-image-url" placeholder="ลิงก์รูปภาพสินค้า (Image URL)" 
+                           value="https://placehold.co/128x128/f6c02c/3b82f6?text=Bee" 
+                           required class="w-full p-3 border rounded-lg">
+                           
+                    <!-- ช่องสำหรับลิงก์ไฟล์ดาวน์โหลด (ไฟล์สินค้าจริง) -->
+                    <input type="text" id="p-download-url" placeholder="ลิงก์ไฟล์สำหรับดาวน์โหลด (Download URL)" 
+                           value="https://example.com/download/product-123" required class="w-full p-3 border rounded-lg">
+                           
                     <button type="submit" class="btn-primary bg-green-600 hover:bg-green-700 w-full">เพิ่มสินค้า</button>
                 </form>
 
@@ -132,8 +204,8 @@
         
         // --- Firebase Initialization and Auth Setup ---
         
-        // Use setLogLevel('debug') for debugging firestore issues
-        setLogLevel('error'); // Reduced logging for cleaner console
+        // ใช้ setLogLevel('error') เพื่อลดข้อความใน console
+        setLogLevel('error'); 
         
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
@@ -172,6 +244,7 @@
         const successMessageEl = document.getElementById('success-message');
         const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
         const loadingTextEl = document.getElementById('loading-text');
+        const promptpayIdDisplayEl = document.getElementById('promptpay-id-display');
 
         
         async function initializeFirebase() {
@@ -180,6 +253,8 @@
                     app = initializeApp(firebaseConfig);
                     db = getFirestore(app);
                     auth = getAuth(app);
+                    promptpayIdDisplayEl.textContent = PROMPT_PAY_ID;
+
 
                     // 1. Authenticate
                     if (initialAuthToken) {
@@ -313,26 +388,21 @@
                         // Update stock in the transaction
                         transaction.update(productRef, { stock: newStock });
                         
-                        productsToUpdate.push({ name: item.name, fileUrl: productDoc.data().fileUrl });
+                        productsToUpdate.push({ name: item.name, fileUrl: productDoc.data().downloadUrl }); 
                         totalAmount += item.price * item.quantity;
                     }
 
                     // Log the successful transaction and simulated delivery
                     console.log("Transaction successful. Inventory updated. Total Paid:", totalAmount);
                     
-                    // Simulate order logging (optional: could save to a 'orders' collection)
-                    // transaction.set(collection(db, `artifacts/${appId}/users/${userId}/orders`), { 
-                    //     items: cartItems, 
-                    //     total: totalAmount, 
-                    //     date: new Date().toISOString() 
-                    // });
-
                     return productsToUpdate;
                 });
                 return true; // Transaction success
             } catch (error) {
                 console.error("Transaction failed: ", error);
-                alert(`การทำรายการล้มเหลว: ${error}`);
+                // Instead of alert(), use a console error or a custom UI message
+                const errorMessage = typeof error === 'string' ? error : error.message || 'Unknown error occurred.';
+                alert(`การทำรายการล้มเหลว: ${errorMessage}`);
                 return false; // Transaction failure
             }
         }
@@ -354,26 +424,10 @@
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             
-            // NOTE: In a real app, you would use a dedicated admin email/password system.
-            // Here we use a hardcoded check and link it to a specific UID for Firestore rules simulation.
             if (email === 'admin@example.com' && password === 'password1234') {
                 try {
-                    // Sign in with the known admin credentials (if set up in Firebase Console)
-                    // For this environment simulation, we simulate sign-in to a fixed ADMIN_UID
-                    // NOTE: This logic assumes that 'admin@example.com' maps to ADMIN_UID in your Auth system.
-                    // For Canvas environments, we rely on the `signInWithCustomToken` to handle auth flow.
-                    // Since we can't reliably create a separate admin account for the user,
-                    // we'll use the initial token for general user and allow a visual 'Admin' mode
-                    // *only* if the initial user ID happens to match our simulated ADMIN_UID.
-                    // Since we want to test admin features, we'll temporarily set the UID if credentials match
-                    // This is a DEVIATION for testing purposes only.
-
-                    // If you want to enable real admin login, you must configure a user in the Firebase Auth console
-                    // with admin@example.com and the password.
-                    
-                    // We will rely on the initial auth token for simplicity and focus on the UI flow.
-                    // If the user manually inputs the correct credentials, we allow access to the control area visually.
-                    auth.currentUser.uid = ADMIN_UID; // Force Admin UID for local access check
+                    // This is a SIMULATION for UI access control only
+                    auth.currentUser.uid = ADMIN_UID; 
                     adminLoginArea.classList.add('hidden');
                     adminControlArea.classList.remove('hidden');
                     adminErrorMsgEl.classList.add('hidden');
@@ -394,14 +448,23 @@
 
         function toggleView(view) {
             state.currentView = view;
+            
+            // Update navigation bar visual state
+            document.getElementById('nav-shop').classList.remove('border-blue-500', 'text-blue-500');
+            document.getElementById('nav-admin').classList.remove('border-blue-500', 'text-blue-500');
+            document.getElementById('nav-shop').classList.add('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
+            document.getElementById('nav-admin').classList.add('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
+
             if (view === 'shop') {
                 shopViewEl.classList.remove('hidden');
                 adminViewEl.classList.add('hidden');
-                mainViewEl.classList.remove('hidden');
+                document.getElementById('nav-shop').classList.add('border-blue-500', 'text-blue-500');
+                document.getElementById('nav-shop').classList.remove('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
             } else if (view === 'admin') {
                 shopViewEl.classList.add('hidden');
                 adminViewEl.classList.remove('hidden');
-                mainViewEl.classList.add('hidden');
+                document.getElementById('nav-admin').classList.add('border-blue-500', 'text-blue-500');
+                document.getElementById('nav-admin').classList.remove('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
                 
                 // Check if already "logged in" as admin
                 if (auth.currentUser?.uid === ADMIN_UID) {
@@ -475,6 +538,8 @@
                 // Reset states
                 successMessageEl.classList.add('hidden');
                 confirmPaymentBtn.classList.remove('hidden');
+                confirmPaymentBtn.disabled = false;
+                confirmPaymentBtn.textContent = 'ยืนยันการชำระเงิน';
                 checkoutModalEl.classList.remove('hidden');
 
             } else {
@@ -525,13 +590,23 @@
 
             state.products.forEach(product => {
                 const isOutOfStock = product.stock <= 0;
+                
+                // Use imageUrl from Firestore or a default placeholder
+                const defaultText = product.name ? product.name.substring(0, 1) : 'B';
+                const imageUrl = product.imageUrl || `https://placehold.co/128x128/f6c02c/3b82f6?text=${defaultText}`;
+
                 const cardHtml = `
                     <div class="product-card bg-white p-5 rounded-xl shadow-md ${isOutOfStock ? 'opacity-50' : ''}">
-                        <div class="h-32 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-4xl text-gray-500">
-                            💻
+                        <!-- Product Image Area -->
+                        <div class="product-image-container rounded-lg mb-4">
+                            <img src="${imageUrl}" 
+                                 alt="Image for ${product.name}" 
+                                 class="w-full h-full object-cover" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/128x128/9CA3AF/ffffff?text=No+Image';" />
                         </div>
+                        
                         <h3 class="text-xl font-semibold text-gray-800 truncate" title="${product.name}">${product.name}</h3>
-                        <p class="text-gray-600 text-sm mb-2">${product.description.substring(0, 50)}...</p>
+                        <p class="text-gray-600 text-sm mb-2">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</p>
                         <p class="text-2xl font-bold text-green-600 mb-4">${product.price.toFixed(2)} บาท</p>
                         <p class="text-xs text-gray-500 mb-4">เหลือ: ${product.stock} ชิ้น</p>
                         
@@ -578,7 +653,7 @@
         // --- Event Listeners ---
 
         document.getElementById('cart-toggle-btn').addEventListener('click', () => {
-            const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const total = state.cart.reduce((sum, item) => sum + item.quantity, 0);
             if (total > 0) {
                 toggleCheckoutModal(true);
             } else {
@@ -593,7 +668,10 @@
                 description: document.getElementById('p-description').value,
                 price: parseFloat(document.getElementById('p-price').value),
                 stock: parseInt(document.getElementById('p-stock').value, 10),
-                fileUrl: document.getElementById('p-file-url').value,
+                // NEW FIELD
+                imageUrl: document.getElementById('p-image-url').value, 
+                // RENAMED FIELD
+                downloadUrl: document.getElementById('p-download-url').value, 
                 createdAt: new Date().toISOString()
             };
 
@@ -616,6 +694,9 @@
 
         // Start initialization
         initializeFirebase();
+
+        // Initial view setup
+        toggleView('shop');
 
     </script>
 </body>
