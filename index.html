@@ -300,6 +300,22 @@
             }
         }
         
+        // Function to wait until Firebase Auth state is ready
+        function waitForAuth() {
+            return new Promise((resolve) => {
+                if (isAuthReady) {
+                    resolve();
+                } else {
+                    const unsubscribe = onAuthStateChanged(auth, (user) => {
+                        if (isAuthReady) {
+                            unsubscribe();
+                            resolve();
+                        }
+                    });
+                }
+            });
+        }
+        
         // --- Firestore Data Operations ---
 
         // Reference to the public products collection
@@ -421,10 +437,13 @@
         }
 
         async function adminLogin() {
+            // Wait for Firebase Auth to be fully initialized
+            await waitForAuth();
+            
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             
-            // 1. ตรวจสอบความพร้อมของ auth และ user ปัจจุบัน (ที่ลงชื่อเข้าใช้แบบ Anonymous)
+            // 1. ตรวจสอบความพร้อมของ auth
             if (!auth || !auth.currentUser) {
                 adminErrorMsgEl.textContent = 'ข้อผิดพลาด: ระบบ Firebase Authentication ยังไม่พร้อม กรุณาลองโหลดหน้าใหม่';
                 adminErrorMsgEl.classList.remove('hidden');
