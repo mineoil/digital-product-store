@@ -193,12 +193,12 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
-            getAuth, signInAnonymously, signInWithCustomToken, signOut, 
-            onAuthStateChanged, signInWithEmailAndPassword 
+            getAuth, signInAnonymously, signOut, onAuthStateChanged, 
+            signInWithEmailAndPassword 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
-            getFirestore, doc, onSnapshot, collection, query, 
-            addDoc, setDoc, updateDoc, deleteDoc, runTransaction 
+            getFirestore, doc, onSnapshot, collection, 
+            addDoc, deleteDoc, runTransaction 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
@@ -207,9 +207,19 @@
         // ใช้ setLogLevel('error') เพื่อลดข้อความใน console
         setLogLevel('error'); 
         
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Configuration for your own Firebase project (จาก product-41b13)
+        const APP_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyByfsA6y9UF17bLVYSFk-ohlh_JwmbWDXI",
+            authDomain: "product-41b13.firebaseapp.com",
+            projectId: "product-41b13",
+            storageBucket: "product-41b13.appspot.com", 
+            messagingSenderId: "650912100830",
+            appId: "1:650912100830:web:96574c2800c2a51a152d4f",
+            measurementId: "G-24C78HKZWN"
+        };
+        
+        // เราจะไม่ใช้ตัวแปรจาก Canvas แล้ว ให้ใช้ค่าจริงแทน
+        const appId = APP_FIREBASE_CONFIG.projectId; 
         
         let app, db, auth;
         let userId = null;
@@ -223,14 +233,13 @@
         };
 
         const PROMPT_PAY_ID = '0812345678'; // ID PromptPay สมมติ
-        const ADMIN_UID = 'admin_user_id'; // จะถูกกำหนดเมื่อ admin ล็อคอินสำเร็จ
-
+        const ADMIN_EMAIL = 'admin@example.com'; // Admin user email
+        
         // Get DOM Elements
         const authStatusEl = document.getElementById('auth-status');
         const userDisplayEl = document.getElementById('user-display');
         const loginLogoutBtn = document.getElementById('login-logout-btn');
         const adminViewBtn = document.getElementById('admin-view-btn');
-        const mainViewEl = document.getElementById('main-view');
         const shopViewEl = document.getElementById('shop-view');
         const adminViewEl = document.getElementById('admin-view');
         const adminLoginArea = document.getElementById('admin-login-area');
@@ -249,19 +258,15 @@
         
         async function initializeFirebase() {
             try {
-                if (!app && firebaseConfig && Object.keys(firebaseConfig).length > 0) {
-                    app = initializeApp(firebaseConfig);
+                if (!app && APP_FIREBASE_CONFIG.apiKey) {
+                    app = initializeApp(APP_FIREBASE_CONFIG);
                     db = getFirestore(app);
                     auth = getAuth(app);
                     promptpayIdDisplayEl.textContent = PROMPT_PAY_ID;
 
-
-                    // 1. Authenticate
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
+                    // 1. Initial Authentication (Sign in anonymously for general user access)
+                    // Note: No need for signInWithCustomToken anymore
+                    await signInAnonymously(auth);
 
                     // 2. Set up Auth State Listener
                     onAuthStateChanged(auth, (user) => {
@@ -270,8 +275,8 @@
                             userDisplayEl.textContent = user.isAnonymous ? 'ผู้ใช้ทั่วไป' : user.email || `User: ${userId.substring(0, 8)}...`;
                             loginLogoutBtn.textContent = 'ออกจากระบบ';
                             
-                            // Show Admin button only if it's the specific admin user
-                            if (user.uid === ADMIN_UID) {
+                            // Check if current user is the Admin (by email)
+                            if (user.email === ADMIN_EMAIL) {
                                 adminViewBtn.classList.remove('hidden');
                             } else {
                                 adminViewBtn.classList.add('hidden');
@@ -287,15 +292,13 @@
                         listenToProducts();
                     });
                 } else {
-                    console.error("Firebase configuration is missing or empty.");
-                    // Fallback to anonymous use if config is missing (data won't persist)
-                    userId = crypto.randomUUID();
-                    userDisplayEl.textContent = 'โหมดทดลอง';
+                    console.error("Firebase configuration is missing.");
+                    userDisplayEl.textContent = 'โหมดทดลอง (Config ขาดหาย)';
                     isAuthReady = true;
                 }
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
-                // Handle initialization failure
+                userDisplayEl.textContent = 'Firebase ล้มเหลว';
                 isAuthReady = true;
             }
         }
@@ -306,12 +309,18 @@
                 if (isAuthReady) {
                     resolve();
                 } else {
-                    const unsubscribe = onAuthStateChanged(auth, (user) => {
-                        if (isAuthReady) {
-                            unsubscribe();
-                            resolve();
-                        }
-                    });
+                    // Only subscribe if 'auth' is initialized
+                    if (auth) {
+                        const unsubscribe = onAuthStateChanged(auth, (user) => {
+                            if (isAuthReady) {
+                                unsubscribe();
+                                resolve();
+                            }
+                        });
+                    } else {
+                        // Resolve immediately if auth instance is not even available
+                        resolve(); 
+                    }
                 }
             });
         }
@@ -321,8 +330,8 @@
         // Reference to the public products collection
         function getProductsCollectionRef() {
             if (!db) return null;
-            // Public path: /artifacts/{appId}/public/data/products
-            return collection(db, `artifacts/${appId}/public/data/products`);
+            // ใช้ชื่อ Collection 'products' ภายใน root ของ Project
+            return collection(db, `products`);
         }
 
         // Listener for real-time product data
@@ -341,13 +350,14 @@
                 loadingTextEl.classList.add('hidden');
             }, (error) => {
                 console.error("Error listening to products:", error);
-                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้า';
+                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้าจากฐานข้อมูล';
             });
         }
 
         // Add a new product (Admin function)
         async function addProduct(product) {
-            if (auth.currentUser?.uid !== ADMIN_UID) {
+            // Check if current user is the Admin
+            if (auth.currentUser?.email !== ADMIN_EMAIL) {
                 console.error("Permission denied: Not an admin.");
                 return;
             }
@@ -361,12 +371,13 @@
 
         // Delete a product (Admin function)
         async function deleteProduct(productId) {
-            if (auth.currentUser?.uid !== ADMIN_UID) {
+            // Check if current user is the Admin
+            if (auth.currentUser?.email !== ADMIN_EMAIL) {
                 console.error("Permission denied: Not an admin.");
                 return;
             }
             try {
-                await deleteDoc(doc(db, `artifacts/${appId}/public/data/products`, productId));
+                await deleteDoc(doc(db, `products`, productId));
                 console.log("Product deleted successfully");
             } catch (e) {
                 console.error("Error deleting document: ", e);
@@ -384,7 +395,7 @@
                     let totalAmount = 0;
 
                     for (const item of cartItems) {
-                        const productRef = doc(db, `artifacts/${appId}/public/data/products`, item.id);
+                        const productRef = doc(db, `products`, item.id);
                         const productDoc = await transaction.get(productRef);
                         
                         if (!productDoc.exists()) {
@@ -426,13 +437,13 @@
         // --- Auth Handlers ---
 
         function handleAuthClick() {
-            if (auth.currentUser && !auth.currentUser.isAnonymous) {
+            if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
+                // If logged in as Admin, sign out
                 signOut(auth);
-                // Switch back to shop view on logout
                 if(state.currentView === 'admin') toggleView('shop');
             } else {
-                // For demonstration, we use a simple login modal simulation
-                alert('กรุณาเข้าสู่ระบบผ่านหน้า Admin เพื่อเข้าสู่โหมดผู้ดูแล หรือใช้โหมด "ผู้ใช้ทั่วไป" โดยอัตโนมัติ');
+                // If Anonymous or generic user, inform them to use Admin panel for login
+                alert('กรุณาเข้าสู่ระบบผ่านหน้า Admin เพื่อเข้าสู่โหมดผู้ดูแล');
             }
         }
 
@@ -443,36 +454,43 @@
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             
-            // 1. ตรวจสอบความพร้อมของ auth
-            if (!auth || !auth.currentUser) {
-                adminErrorMsgEl.textContent = 'ข้อผิดพลาด: ระบบ Firebase Authentication ยังไม่พร้อม กรุณาลองโหลดหน้าใหม่';
+            adminErrorMsgEl.classList.add('hidden'); // Clear previous error
+
+            if (!auth) {
+                adminErrorMsgEl.textContent = 'ข้อผิดพลาด: ระบบ Firebase Authentication ยังไม่พร้อม';
                 adminErrorMsgEl.classList.remove('hidden');
-                console.error('Firebase Auth not ready or no current user found.');
+                console.error('Firebase Auth instance not available.');
                 return;
             }
-
-            if (email === 'admin@example.com' && password === 'password1234') {
-                try {
-                    // 2. เปลี่ยน UID ของผู้ใช้ปัจจุบัน (ที่เข้าสู่ระบบแบบ Anonymous) เป็น ADMIN_UID เพื่อจำลองสิทธิ์
-                    // NOTE: ในสภาพแวดล้อมจริง เราจะใช้ signInWithEmailAndPassword แทน
-                    auth.currentUser.uid = ADMIN_UID; 
-                    
-                    // 3. อัปเดต UI
-                    userDisplayEl.textContent = `Admin: ${email}`;
-                    adminViewBtn.classList.remove('hidden');
+            
+            try {
+                // Use Firebase real sign-in for Admin
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                
+                // Check if the signed-in user is the defined admin
+                if (userCredential.user.email === ADMIN_EMAIL) {
+                    // Login successful and it's the admin
+                    console.log("Admin Login Successful.");
+                    // UI update is handled by onAuthStateChanged listener
                     
                     adminLoginArea.classList.add('hidden');
                     adminControlArea.classList.remove('hidden');
-                    adminErrorMsgEl.classList.add('hidden');
-                    console.log("Simulated Admin Login Successful.");
                     toggleView('admin');
-
-                } catch (error) {
-                    adminErrorMsgEl.textContent = `ข้อผิดพลาดในการเข้าสู่ระบบ: ${error.message}`;
+                } else {
+                    // Logged in, but not the designated admin
+                    signOut(auth); // Force sign out
+                    adminErrorMsgEl.textContent = 'บัญชีนี้ไม่ใช่บัญชีผู้ดูแลระบบที่ถูกต้อง';
                     adminErrorMsgEl.classList.remove('hidden');
                 }
-            } else {
-                adminErrorMsgEl.textContent = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+
+            } catch (error) {
+                let errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'ข้อมูลการเข้าสู่ระบบไม่ถูกต้อง';
+                }
+                adminErrorMsgEl.textContent = `ข้อผิดพลาดในการเข้าสู่ระบบ: ${errorMessage}`;
                 adminErrorMsgEl.classList.remove('hidden');
             }
         }
@@ -500,7 +518,7 @@
                 document.getElementById('nav-admin').classList.remove('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
                 
                 // Check if already "logged in" as admin
-                if (auth?.currentUser?.uid === ADMIN_UID) { // ใช้ Optional Chaining (?) เพื่อป้องกัน error
+                if (auth?.currentUser?.email === ADMIN_EMAIL) { 
                     adminLoginArea.classList.add('hidden');
                     adminControlArea.classList.remove('hidden');
                 } else {
@@ -657,7 +675,7 @@
         function renderAdminProducts() {
             adminProductListEl.innerHTML = '';
             
-            if (auth?.currentUser?.uid !== ADMIN_UID) {
+            if (auth?.currentUser?.email !== ADMIN_EMAIL) {
                 adminProductListEl.innerHTML = `<p class="text-red-500">คุณไม่มีสิทธิ์เข้าถึงข้อมูลส่วนนี้ (กรุณาล็อคอิน Admin)</p>`;
                 return;
             }
