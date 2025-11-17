@@ -424,10 +424,24 @@
             const email = document.getElementById('admin-email').value;
             const password = document.getElementById('admin-password').value;
             
+            // 1. ตรวจสอบความพร้อมของ auth และ user ปัจจุบัน (ที่ลงชื่อเข้าใช้แบบ Anonymous)
+            if (!auth || !auth.currentUser) {
+                adminErrorMsgEl.textContent = 'ข้อผิดพลาด: ระบบ Firebase Authentication ยังไม่พร้อม กรุณาลองโหลดหน้าใหม่';
+                adminErrorMsgEl.classList.remove('hidden');
+                console.error('Firebase Auth not ready or no current user found.');
+                return;
+            }
+
             if (email === 'admin@example.com' && password === 'password1234') {
                 try {
-                    // This is a SIMULATION for UI access control only
+                    // 2. เปลี่ยน UID ของผู้ใช้ปัจจุบัน (ที่เข้าสู่ระบบแบบ Anonymous) เป็น ADMIN_UID เพื่อจำลองสิทธิ์
+                    // NOTE: ในสภาพแวดล้อมจริง เราจะใช้ signInWithEmailAndPassword แทน
                     auth.currentUser.uid = ADMIN_UID; 
+                    
+                    // 3. อัปเดต UI
+                    userDisplayEl.textContent = `Admin: ${email}`;
+                    adminViewBtn.classList.remove('hidden');
+                    
                     adminLoginArea.classList.add('hidden');
                     adminControlArea.classList.remove('hidden');
                     adminErrorMsgEl.classList.add('hidden');
@@ -467,7 +481,7 @@
                 document.getElementById('nav-admin').classList.remove('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
                 
                 // Check if already "logged in" as admin
-                if (auth.currentUser?.uid === ADMIN_UID) {
+                if (auth?.currentUser?.uid === ADMIN_UID) { // ใช้ Optional Chaining (?) เพื่อป้องกัน error
                     adminLoginArea.classList.add('hidden');
                     adminControlArea.classList.remove('hidden');
                 } else {
@@ -624,8 +638,8 @@
         function renderAdminProducts() {
             adminProductListEl.innerHTML = '';
             
-            if (auth.currentUser?.uid !== ADMIN_UID) {
-                adminProductListEl.innerHTML = `<p class="text-red-500">คุณไม่มีสิทธิ์เข้าถึงข้อมูลส่วนนี้</p>`;
+            if (auth?.currentUser?.uid !== ADMIN_UID) {
+                adminProductListEl.innerHTML = `<p class="text-red-500">คุณไม่มีสิทธิ์เข้าถึงข้อมูลส่วนนี้ (กรุณาล็อคอิน Admin)</p>`;
                 return;
             }
 
