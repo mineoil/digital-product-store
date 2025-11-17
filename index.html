@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ร้านค้าดิจิทัล - Digital Product Store</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js@0.0.1/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f9; }
+        .product-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        .btn-primary { background-color: #3b82f6; border-radius: 0.5rem; padding: 0.75rem 1.5rem; color: white; transition: background-color 0.2s; }
+        .btn-primary:hover { background-color: #2563eb; }
+        .cart-item-list { max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- Header / Navigation -->
+        <header class="flex justify-between items-center bg-white p-4 shadow-lg rounded-xl mb-8">
+            <h1 class="text-3xl font-bold text-blue-600">Digital Shop</h1>
+            <div class="flex items-center space-x-4">
+                <button id="cart-toggle-btn" class="relative p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+                <div id="auth-status" class="text-sm font-medium text-gray-700">
+                    <span id="user-display">กำลังโหลด...</span> | 
+                    <button id="admin-view-btn" class="text-indigo-600 hover:text-indigo-800 hidden" onclick="toggleView('admin')">Admin</button>
+                    <button id="login-logout-btn" class="text-red-600 hover:text-red-800" onclick="handleAuthClick()">เข้าสู่ระบบ</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-view" class="space-y-8">
+            <!-- Shop View -->
+            <section id="shop-view">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">สินค้าดิจิทัลทั้งหมด</h2>
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Products will be injected here -->
+                    <div class="col-span-full text-center py-12 text-gray-500" id="loading-text">กำลังโหลดสินค้า...</div>
+                </div>
+            </section>
+
+            <!-- Checkout Modal (Hidden by default) -->
+            <div id="checkout-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'checkout-modal') toggleCheckoutModal(false)">
+                <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg" onclick="event.stopPropagation()">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">ยืนยันการสั่งซื้อ</h3>
+                    <div class="space-y-3 mb-6 border p-4 rounded-lg bg-yellow-50">
+                        <p class="text-sm font-semibold text-gray-700">ยอดรวม:</p>
+                        <p class="text-3xl font-extrabold text-red-600" id="checkout-total">0.00 บาท</p>
+                        <p class="text-xs text-gray-500">หมายเหตุ: นี่คือการจำลองการชำระเงิน PromptPay กรุณากดยืนยันเมื่อโอนเงินเสร็จสิ้น</p>
+                    </div>
+
+                    <div id="qr-code-container" class="flex justify-center mb-6">
+                        <!-- QR Code will be generated here -->
+                        <div id="qrcode" class="p-2 border border-gray-300 rounded-lg"></div>
+                    </div>
+
+                    <button class="btn-primary w-full text-lg" id="confirm-payment-btn" onclick="simulatePaymentConfirmation()">
+                        ยืนยันการชำระเงิน
+                    </button>
+                    <button class="mt-3 w-full text-gray-600 hover:text-gray-800" onclick="toggleCheckoutModal(false)">
+                        ยกเลิก
+                    </button>
+                    
+                    <!-- Confirmation Message -->
+                    <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4" role="alert">
+                        <p class="font-bold">ชำระเงินสำเร็จ!</p>
+                        <p>สินค้าดิจิทัลพร้อมดาวน์โหลดแล้ว ขอบคุณที่อุดหนุนครับ/ค่ะ</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Admin Panel View -->
+        <section id="admin-view" class="hidden p-8 bg-white rounded-xl shadow-xl">
+            <h2 class="text-3xl font-bold text-indigo-700 mb-6">แผงควบคุมผู้ดูแล (Admin Panel)</h2>
+            
+            <div id="admin-login-area">
+                <h3 class="text-xl font-semibold mb-3">เข้าสู่ระบบผู้ดูแล</h3>
+                <input type="email" id="admin-email" placeholder="อีเมล" class="w-full p-3 mb-3 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="admin@example.com">
+                <input type="password" id="admin-password" placeholder="รหัสผ่าน" class="w-full p-3 mb-4 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="password1234">
+                <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 w-full" onclick="adminLogin()">เข้าสู่ระบบ</button>
+                <p class="text-sm text-red-500 mt-2 hidden" id="admin-error-msg"></p>
+                <p class="text-xs text-gray-500 mt-3">สำหรับทดสอบ: ใช้ admin@example.com / password1234</p>
+            </div>
+
+            <div id="admin-control-area" class="hidden">
+                <h3 class="text-2xl font-semibold mb-4 border-b pb-2">เพิ่มสินค้าใหม่</h3>
+                <form id="add-product-form" class="space-y-4">
+                    <input type="text" id="p-name" placeholder="ชื่อสินค้าดิจิทัล" required class="w-full p-3 border rounded-lg">
+                    <textarea id="p-description" placeholder="รายละเอียดสินค้า" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
+                    <input type="number" id="p-price" placeholder="ราคา (บาท)" required min="1" class="w-full p-3 border rounded-lg">
+                    <input type="number" id="p-stock" placeholder="จำนวนสต็อก" required min="1" class="w-full p-3 border rounded-lg">
+                    <input type="text" id="p-file-url" placeholder="ลิงก์ไฟล์ (จำลอง)" value="https://example.com/download/product-123" required class="w-full p-3 border rounded-lg">
+                    <button type="submit" class="btn-primary bg-green-600 hover:bg-green-700 w-full">เพิ่มสินค้า</button>
+                </form>
+
+                <h3 class="text-2xl font-semibold mt-8 mb-4 border-b pb-2">สินค้าที่มีอยู่</h3>
+                <div id="admin-product-list" class="space-y-4">
+                    <!-- Admin product list will be injected here -->
+                </div>
+                <button class="mt-6 text-indigo-600 hover:text-indigo-800" onclick="toggleView('shop')">กลับไปที่ร้านค้า</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, signInAnonymously, signInWithCustomToken, signOut, 
+            onAuthStateChanged, signInWithEmailAndPassword 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, doc, onSnapshot, collection, query, 
+            addDoc, setDoc, updateDoc, deleteDoc, runTransaction 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Firebase Initialization and Auth Setup ---
+        
+        // Use setLogLevel('debug') for debugging firestore issues
+        setLogLevel('error'); // Reduced logging for cleaner console
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+        
+        // Global variables for the app state
+        const state = {
+            products: [],
+            cart: [],
+            currentView: 'shop', // 'shop' or 'admin'
+        };
+
+        const PROMPT_PAY_ID = '0812345678'; // ID PromptPay สมมติ
+        const ADMIN_UID = 'admin_user_id'; // จะถูกกำหนดเมื่อ admin ล็อคอินสำเร็จ
+
+        // Get DOM Elements
+        const authStatusEl = document.getElementById('auth-status');
+        const userDisplayEl = document.getElementById('user-display');
+        const loginLogoutBtn = document.getElementById('login-logout-btn');
+        const adminViewBtn = document.getElementById('admin-view-btn');
+        const mainViewEl = document.getElementById('main-view');
+        const shopViewEl = document.getElementById('shop-view');
+        const adminViewEl = document.getElementById('admin-view');
+        const adminLoginArea = document.getElementById('admin-login-area');
+        const adminControlArea = document.getElementById('admin-control-area');
+        const productListEl = document.getElementById('product-list');
+        const cartCountEl = document.getElementById('cart-count');
+        const checkoutModalEl = document.getElementById('checkout-modal');
+        const checkoutTotalEl = document.getElementById('checkout-total');
+        const adminProductListEl = document.getElementById('admin-product-list');
+        const adminErrorMsgEl = document.getElementById('admin-error-msg');
+        const successMessageEl = document.getElementById('success-message');
+        const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+        const loadingTextEl = document.getElementById('loading-text');
+
+        
+        async function initializeFirebase() {
+            try {
+                if (!app && firebaseConfig && Object.keys(firebaseConfig).length > 0) {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    // 1. Authenticate
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    // 2. Set up Auth State Listener
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            userDisplayEl.textContent = user.isAnonymous ? 'ผู้ใช้ทั่วไป' : user.email || `User: ${userId.substring(0, 8)}...`;
+                            loginLogoutBtn.textContent = 'ออกจากระบบ';
+                            
+                            // Show Admin button only if it's the specific admin user
+                            if (user.uid === ADMIN_UID) {
+                                adminViewBtn.classList.remove('hidden');
+                            } else {
+                                adminViewBtn.classList.add('hidden');
+                            }
+                        } else {
+                            userId = null;
+                            userDisplayEl.textContent = 'ไม่ได้เข้าสู่ระบบ';
+                            loginLogoutBtn.textContent = 'เข้าสู่ระบบ';
+                            adminViewBtn.classList.add('hidden');
+                        }
+                        isAuthReady = true;
+                        // Start listening to products once auth is ready
+                        listenToProducts();
+                    });
+                } else {
+                    console.error("Firebase configuration is missing or empty.");
+                    // Fallback to anonymous use if config is missing (data won't persist)
+                    userId = crypto.randomUUID();
+                    userDisplayEl.textContent = 'โหมดทดลอง';
+                    isAuthReady = true;
+                }
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                // Handle initialization failure
+                isAuthReady = true;
+            }
+        }
+        
+        // --- Firestore Data Operations ---
+
+        // Reference to the public products collection
+        function getProductsCollectionRef() {
+            if (!db) return null;
+            // Public path: /artifacts/{appId}/public/data/products
+            return collection(db, `artifacts/${appId}/public/data/products`);
+        }
+
+        // Listener for real-time product data
+        function listenToProducts() {
+            const productsRef = getProductsCollectionRef();
+            if (!isAuthReady || !productsRef) return;
+            
+            onSnapshot(productsRef, (snapshot) => {
+                const newProducts = [];
+                snapshot.forEach((doc) => {
+                    newProducts.push({ id: doc.id, ...doc.data() });
+                });
+                state.products = newProducts;
+                renderProducts();
+                renderAdminProducts();
+                loadingTextEl.classList.add('hidden');
+            }, (error) => {
+                console.error("Error listening to products:", error);
+                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้า';
+            });
+        }
+
+        // Add a new product (Admin function)
+        async function addProduct(product) {
+            if (auth.currentUser?.uid !== ADMIN_UID) {
+                console.error("Permission denied: Not an admin.");
+                return;
+            }
+            try {
+                await addDoc(getProductsCollectionRef(), product);
+                console.log("Product added successfully");
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
+        }
+
+        // Delete a product (Admin function)
+        async function deleteProduct(productId) {
+            if (auth.currentUser?.uid !== ADMIN_UID) {
+                console.error("Permission denied: Not an admin.");
+                return;
+            }
+            try {
+                await deleteDoc(doc(db, `artifacts/${appId}/public/data/products`, productId));
+                console.log("Product deleted successfully");
+            } catch (e) {
+                console.error("Error deleting document: ", e);
+            }
+        }
+
+        // Atomically update stock (Called after simulated payment)
+        async function updateStock(cartItems) {
+            if (!db) return false;
+            
+            // Use Firestore Transaction to ensure stock is updated atomically
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const productsToUpdate = [];
+                    let totalAmount = 0;
+
+                    for (const item of cartItems) {
+                        const productRef = doc(db, `artifacts/${appId}/public/data/products`, item.id);
+                        const productDoc = await transaction.get(productRef);
+                        
+                        if (!productDoc.exists()) {
+                            throw "Product not found!";
+                        }
+                        
+                        const currentStock = productDoc.data().stock;
+                        const quantity = item.quantity;
+                        
+                        if (currentStock < quantity) {
+                            throw `Stock for ${item.name} is insufficient. Current: ${currentStock}, Needed: ${quantity}`;
+                        }
+                        
+                        // New stock value
+                        const newStock = currentStock - quantity;
+                        
+                        // Update stock in the transaction
+                        transaction.update(productRef, { stock: newStock });
+                        
+                        productsToUpdate.push({ name: item.name, fileUrl: productDoc.data().fileUrl });
+                        totalAmount += item.price * item.quantity;
+                    }
+
+                    // Log the successful transaction and simulated delivery
+                    console.log("Transaction successful. Inventory updated. Total Paid:", totalAmount);
+                    
+                    // Simulate order logging (optional: could save to a 'orders' collection)
+                    // transaction.set(collection(db, `artifacts/${appId}/users/${userId}/orders`), { 
+                    //     items: cartItems, 
+                    //     total: totalAmount, 
+                    //     date: new Date().toISOString() 
+                    // });
+
+                    return productsToUpdate;
+                });
+                return true; // Transaction success
+            } catch (error) {
+                console.error("Transaction failed: ", error);
+                alert(`การทำรายการล้มเหลว: ${error}`);
+                return false; // Transaction failure
+            }
+        }
+
+        // --- Auth Handlers ---
+
+        function handleAuthClick() {
+            if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                signOut(auth);
+                // Switch back to shop view on logout
+                if(state.currentView === 'admin') toggleView('shop');
+            } else {
+                // For demonstration, we use a simple login modal simulation
+                alert('กรุณาเข้าสู่ระบบผ่านหน้า Admin เพื่อเข้าสู่โหมดผู้ดูแล หรือใช้โหมด "ผู้ใช้ทั่วไป" โดยอัตโนมัติ');
+            }
+        }
+
+        async function adminLogin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            
+            // NOTE: In a real app, you would use a dedicated admin email/password system.
+            // Here we use a hardcoded check and link it to a specific UID for Firestore rules simulation.
+            if (email === 'admin@example.com' && password === 'password1234') {
+                try {
+                    // Sign in with the known admin credentials (if set up in Firebase Console)
+                    // For this environment simulation, we simulate sign-in to a fixed ADMIN_UID
+                    // NOTE: This logic assumes that 'admin@example.com' maps to ADMIN_UID in your Auth system.
+                    // For Canvas environments, we rely on the `signInWithCustomToken` to handle auth flow.
+                    // Since we can't reliably create a separate admin account for the user,
+                    // we'll use the initial token for general user and allow a visual 'Admin' mode
+                    // *only* if the initial user ID happens to match our simulated ADMIN_UID.
+                    // Since we want to test admin features, we'll temporarily set the UID if credentials match
+                    // This is a DEVIATION for testing purposes only.
+
+                    // If you want to enable real admin login, you must configure a user in the Firebase Auth console
+                    // with admin@example.com and the password.
+                    
+                    // We will rely on the initial auth token for simplicity and focus on the UI flow.
+                    // If the user manually inputs the correct credentials, we allow access to the control area visually.
+                    auth.currentUser.uid = ADMIN_UID; // Force Admin UID for local access check
+                    adminLoginArea.classList.add('hidden');
+                    adminControlArea.classList.remove('hidden');
+                    adminErrorMsgEl.classList.add('hidden');
+                    console.log("Simulated Admin Login Successful.");
+                    toggleView('admin');
+
+                } catch (error) {
+                    adminErrorMsgEl.textContent = `ข้อผิดพลาดในการเข้าสู่ระบบ: ${error.message}`;
+                    adminErrorMsgEl.classList.remove('hidden');
+                }
+            } else {
+                adminErrorMsgEl.textContent = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+                adminErrorMsgEl.classList.remove('hidden');
+            }
+        }
+
+        // --- Cart and UI Handlers ---
+
+        function toggleView(view) {
+            state.currentView = view;
+            if (view === 'shop') {
+                shopViewEl.classList.remove('hidden');
+                adminViewEl.classList.add('hidden');
+                mainViewEl.classList.remove('hidden');
+            } else if (view === 'admin') {
+                shopViewEl.classList.add('hidden');
+                adminViewEl.classList.remove('hidden');
+                mainViewEl.classList.add('hidden');
+                
+                // Check if already "logged in" as admin
+                if (auth.currentUser?.uid === ADMIN_UID) {
+                    adminLoginArea.classList.add('hidden');
+                    adminControlArea.classList.remove('hidden');
+                } else {
+                    adminLoginArea.classList.remove('hidden');
+                    adminControlArea.classList.add('hidden');
+                }
+                renderAdminProducts();
+            }
+        }
+
+        function addToCart(productId) {
+            const product = state.products.find(p => p.id === productId);
+            if (!product || product.stock <= 0) {
+                alert('สินค้านี้หมดแล้วหรือไม่มีในรายการ');
+                return;
+            }
+
+            const existingItem = state.cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                // Check if adding one more exceeds stock
+                if (existingItem.quantity + 1 > product.stock) {
+                    alert('ไม่สามารถเพิ่มสินค้าได้อีก: สินค้าในสต็อกไม่เพียงพอ');
+                    return;
+                }
+                existingItem.quantity += 1;
+            } else {
+                state.cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1
+                });
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCountEl.textContent = totalItems;
+        }
+
+        function toggleCheckoutModal(show) {
+            if (show) {
+                if (state.cart.length === 0) {
+                    alert('กรุณาเลือกสินค้าก่อนทำการชำระเงิน');
+                    return;
+                }
+                
+                const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                checkoutTotalEl.textContent = `${total.toFixed(2)} บาท`;
+                
+                // 1. Clear previous QR
+                document.getElementById('qrcode').innerHTML = '';
+                // 2. Generate PromptPay Simulation Data
+                const qrData = `PromptPay ID: ${PROMPT_PAY_ID}\nAmount: ${total.toFixed(2)} THB\n(Simulated Payment)`;
+                
+                // 3. Generate QR Code
+                new QRCode(document.getElementById("qrcode"), {
+                    text: qrData,
+                    width: 180,
+                    height: 180,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                
+                // Reset states
+                successMessageEl.classList.add('hidden');
+                confirmPaymentBtn.classList.remove('hidden');
+                checkoutModalEl.classList.remove('hidden');
+
+            } else {
+                checkoutModalEl.classList.add('hidden');
+            }
+        }
+
+        async function simulatePaymentConfirmation() {
+            if (state.cart.length === 0) return;
+            
+            confirmPaymentBtn.disabled = true;
+            confirmPaymentBtn.textContent = 'กำลังดำเนินการ...';
+
+            const success = await updateStock(state.cart);
+            
+            if (success) {
+                // Payment and stock update successful
+                successMessageEl.classList.remove('hidden');
+                confirmPaymentBtn.classList.add('hidden');
+                
+                // Clear cart after a successful transaction
+                state.cart = [];
+                updateCartUI();
+
+                // Automatically close modal after 3 seconds
+                setTimeout(() => {
+                    toggleCheckoutModal(false);
+                }, 3000);
+
+            } else {
+                // Transaction failed (e.g., stock was insufficient)
+                confirmPaymentBtn.disabled = false;
+                confirmPaymentBtn.textContent = 'ยืนยันการชำระเงิน';
+                // The error alert is handled inside updateStock()
+            }
+        }
+
+
+        // --- Render Functions ---
+
+        function renderProducts() {
+            productListEl.innerHTML = ''; // Clear previous products
+
+            if (state.products.length === 0) {
+                productListEl.innerHTML = `<p class="col-span-full text-center py-12 text-gray-500">ไม่มีสินค้าในร้านค้า</p>`;
+                return;
+            }
+
+            state.products.forEach(product => {
+                const isOutOfStock = product.stock <= 0;
+                const cardHtml = `
+                    <div class="product-card bg-white p-5 rounded-xl shadow-md ${isOutOfStock ? 'opacity-50' : ''}">
+                        <div class="h-32 bg-gray-200 rounded-lg mb-4 flex items-center justify-center text-4xl text-gray-500">
+                            💻
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 truncate" title="${product.name}">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-2">${product.description.substring(0, 50)}...</p>
+                        <p class="text-2xl font-bold text-green-600 mb-4">${product.price.toFixed(2)} บาท</p>
+                        <p class="text-xs text-gray-500 mb-4">เหลือ: ${product.stock} ชิ้น</p>
+                        
+                        <button onclick="addToCart('${product.id}')" 
+                                class="btn-primary w-full ${isOutOfStock ? 'bg-gray-400 cursor-not-allowed' : ''}" 
+                                ${isOutOfStock ? 'disabled' : ''}>
+                            ${isOutOfStock ? 'สินค้าหมด' : 'หยิบใส่ตะกร้า'}
+                        </button>
+                    </div>
+                `;
+                productListEl.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+        
+        function renderAdminProducts() {
+            adminProductListEl.innerHTML = '';
+            
+            if (auth.currentUser?.uid !== ADMIN_UID) {
+                adminProductListEl.innerHTML = `<p class="text-red-500">คุณไม่มีสิทธิ์เข้าถึงข้อมูลส่วนนี้</p>`;
+                return;
+            }
+
+            if (state.products.length === 0) {
+                adminProductListEl.innerHTML = `<p class="text-gray-500">ยังไม่มีสินค้าในระบบ</p>`;
+                return;
+            }
+
+            state.products.forEach(product => {
+                const itemHtml = `
+                    <div class="flex justify-between items-center p-3 border rounded-lg bg-gray-50">
+                        <div class="flex-grow">
+                            <p class="font-semibold">${product.name} (${product.id.substring(0, 5)}...)</p>
+                            <p class="text-sm text-gray-600">ราคา: ${product.price.toFixed(2)} | สต็อก: ${product.stock}</p>
+                        </div>
+                        <button onclick="deleteProduct('${product.id}')" class="ml-4 text-sm text-red-500 hover:text-red-700">
+                            ลบ
+                        </button>
+                    </div>
+                `;
+                adminProductListEl.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        }
+
+        // --- Event Listeners ---
+
+        document.getElementById('cart-toggle-btn').addEventListener('click', () => {
+            const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            if (total > 0) {
+                toggleCheckoutModal(true);
+            } else {
+                alert('ตะกร้าสินค้าว่างเปล่า');
+            }
+        });
+
+        document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newProduct = {
+                name: document.getElementById('p-name').value,
+                description: document.getElementById('p-description').value,
+                price: parseFloat(document.getElementById('p-price').value),
+                stock: parseInt(document.getElementById('p-stock').value, 10),
+                fileUrl: document.getElementById('p-file-url').value,
+                createdAt: new Date().toISOString()
+            };
+
+            await addProduct(newProduct);
+            e.target.reset();
+            alert('เพิ่มสินค้าเรียบร้อยแล้ว!');
+        });
+
+        // Expose functions to global scope for HTML event handlers
+        window.initializeFirebase = initializeFirebase;
+        window.handleAuthClick = handleAuthClick;
+        window.adminLogin = adminLogin;
+        window.toggleView = toggleView;
+        window.addToCart = addToCart;
+        window.toggleCheckoutModal = toggleCheckoutModal;
+        window.simulatePaymentConfirmation = simulatePaymentConfirmation;
+        window.addProduct = addProduct;
+        window.deleteProduct = deleteProduct;
+
+
+        // Start initialization
+        initializeFirebase();
+
+    </script>
+</body>
+</html>
