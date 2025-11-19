@@ -209,21 +209,22 @@
         
         // Configuration for your own Firebase project (จาก product-41b13)
         // **นี่คือ Config ที่ถูกรวมแล้ว**
-        const APP_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyByfsA6y9UF17bLVYSFk-ohlh_JwmbWDXI",
-            authDomain: "product-41b13.firebaseapp.com",
-            projectId: "product-41b13",
-            storageBucket: "product-41b13.appspot.com", 
-            messagingSenderId: "650912100830",
-            appId: "1:650912100830:web:96574c2800c2a51a152d4f",
-            measurementId: "G-24C78HKZWN"
+        const firebaseConfig = {
+          apiKey: "AIzaSyByfsA6y9Uf17bLvYSFk-ohlh_JwmbWDXI",
+          authDomain: "product-41b13.firebaseapp.com",
+          projectId: "product-41b13",
+          storageBucket: "product-41b13.firebasestorage.app",
+          messagingSenderId: "650912100830",
+          appId: "1:650912100830:web:96574c2800c2a51a152d4f",
+          measurementId: "G-24C78HKZWN"
         };
+        
+        // ใช้ Project ID เป็น appId สำหรับการอ้างอิง
+        const appId = APP_FIREBASE_CONFIG.projectId; 
         
         let app, db, auth;
         let userId = null;
         let isAuthReady = false;
-        // Project ID จะถูกกำหนดเมื่อ Firebase Init แล้ว
-        let appId = null; 
         
         // Global variables for the app state
         const state = {
@@ -264,8 +265,6 @@
                     db = getFirestore(app);
                     auth = getAuth(app);
                     promptpayIdDisplayEl.textContent = PROMPT_PAY_ID;
-                    // กำหนดค่า appId ที่นี่เมื่อ config พร้อมแล้ว
-                    appId = APP_FIREBASE_CONFIG.projectId; 
 
                     // 1. Initial Authentication (Sign in anonymously for general user access)
                     await signInAnonymously(auth);
@@ -301,7 +300,7 @@
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
                 // แสดงข้อความ Firebase ล้มเหลวให้เห็นชัดเจนขึ้น
-                userDisplayEl.textContent = 'Firebase ล้มเหลว (ตรวจสอบ Console)';
+                userDisplayEl.textContent = 'Firebase ล้มเหลว';
                 isAuthReady = true;
             }
         }
@@ -355,7 +354,7 @@
             }, (error) => {
                 console.error("Error listening to products (Check Firestore Rules):", error);
                 // แสดงข้อความให้ผู้ใช้รู้ว่าเกิดปัญหาที่ Rules
-                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้า (ตรวจสอบ Firestore Rules)';
+                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้า (กรุณาตรวจสอบ Firestore Rules)';
             });
         }
 
@@ -496,8 +495,6 @@
                     errorMessage = 'ข้อมูลการเข้าสู่ระบบไม่ถูกต้อง';
                 } else if (error.code === 'auth/network-request-failed') {
                     errorMessage = 'การเชื่อมต่อเครือข่ายล้มเหลว';
-                } else if (error.code === 'auth/operation-not-allowed') {
-                    errorMessage = 'การเข้าสู่ระบบด้วยอีเมล/รหัสผ่านไม่ได้เปิดใช้งาน';
                 }
                 adminErrorMsgEl.textContent = `ข้อผิดพลาดในการเข้าสู่ระบบ: ${errorMessage}`;
                 adminErrorMsgEl.classList.remove('hidden');
