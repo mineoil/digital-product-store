@@ -208,6 +208,7 @@
         setLogLevel('error'); 
         
         // Configuration for your own Firebase project (จาก product-41b13)
+        // **นี่คือ Config ที่ถูกรวมแล้ว**
         const APP_FIREBASE_CONFIG = {
             apiKey: "AIzaSyByfsA6y9UF17bLVYSFk-ohlh_JwmbWDXI",
             authDomain: "product-41b13.firebaseapp.com",
@@ -218,7 +219,7 @@
             measurementId: "G-24C78HKZWN"
         };
         
-        // เราจะไม่ใช้ตัวแปรจาก Canvas แล้ว ให้ใช้ค่าจริงแทน
+        // ใช้ Project ID เป็น appId สำหรับการอ้างอิง
         const appId = APP_FIREBASE_CONFIG.projectId; 
         
         let app, db, auth;
@@ -258,6 +259,7 @@
         
         async function initializeFirebase() {
             try {
+                // ตรวจสอบว่ามี API Key และยังไม่ได้ Init
                 if (!app && APP_FIREBASE_CONFIG.apiKey) {
                     app = initializeApp(APP_FIREBASE_CONFIG);
                     db = getFirestore(app);
@@ -265,7 +267,6 @@
                     promptpayIdDisplayEl.textContent = PROMPT_PAY_ID;
 
                     // 1. Initial Authentication (Sign in anonymously for general user access)
-                    // Note: No need for signInWithCustomToken anymore
                     await signInAnonymously(auth);
 
                     // 2. Set up Auth State Listener
@@ -298,6 +299,7 @@
                 }
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
+                // แสดงข้อความ Firebase ล้มเหลวให้เห็นชัดเจนขึ้น
                 userDisplayEl.textContent = 'Firebase ล้มเหลว';
                 isAuthReady = true;
             }
@@ -339,6 +341,7 @@
             const productsRef = getProductsCollectionRef();
             if (!isAuthReady || !productsRef) return;
             
+            // เพิ่มการจัดการข้อผิดพลาดใน onSnapshot 
             onSnapshot(productsRef, (snapshot) => {
                 const newProducts = [];
                 snapshot.forEach((doc) => {
@@ -349,8 +352,9 @@
                 renderAdminProducts();
                 loadingTextEl.classList.add('hidden');
             }, (error) => {
-                console.error("Error listening to products:", error);
-                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้าจากฐานข้อมูล';
+                console.error("Error listening to products (Check Firestore Rules):", error);
+                // แสดงข้อความให้ผู้ใช้รู้ว่าเกิดปัญหาที่ Rules
+                loadingTextEl.textContent = 'เกิดข้อผิดพลาดในการโหลดสินค้า (กรุณาตรวจสอบ Firestore Rules)';
             });
         }
 
@@ -365,7 +369,7 @@
                 await addDoc(getProductsCollectionRef(), product);
                 console.log("Product added successfully");
             } catch (e) {
-                console.error("Error adding document: ", e);
+                console.error("Error adding document (Check Firestore Rules): ", e);
             }
         }
 
@@ -380,7 +384,7 @@
                 await deleteDoc(doc(db, `products`, productId));
                 console.log("Product deleted successfully");
             } catch (e) {
-                console.error("Error deleting document: ", e);
+                console.error("Error deleting document (Check Firestore Rules): ", e);
             }
         }
 
@@ -489,6 +493,8 @@
                     errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
                 } else if (error.code === 'auth/invalid-credential') {
                     errorMessage = 'ข้อมูลการเข้าสู่ระบบไม่ถูกต้อง';
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMessage = 'การเชื่อมต่อเครือข่ายล้มเหลว';
                 }
                 adminErrorMsgEl.textContent = `ข้อผิดพลาดในการเข้าสู่ระบบ: ${errorMessage}`;
                 adminErrorMsgEl.classList.remove('hidden');
