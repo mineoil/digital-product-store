@@ -141,8 +141,7 @@
                     
                     <!-- Confirmation Message -->
                     <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4 rounded-lg" role="alert">
-                        <p class="font-bold">ชำระเงินสำเร็จ!</p>
-                        <p>สินค้าดิจิทัลพร้อมดาวน์โหลดแล้ว ขอบคุณที่อุดหนุนครับ/ค่ะ</p>
+                        <!-- Download links will be injected here -->
                     </div>
                 </div>
             </div>
@@ -397,7 +396,7 @@
             
             // Use Firestore Transaction to ensure stock is updated atomically
             try {
-                await runTransaction(db, async (transaction) => {
+                const purchasedFiles = await runTransaction(db, async (transaction) => { // Capture transaction result
                     const productsToUpdate = [];
                     let totalAmount = 0;
 
@@ -422,16 +421,20 @@
                         // Update stock in the transaction
                         transaction.update(productRef, { stock: newStock });
                         
-                        productsToUpdate.push({ name: item.name, fileUrl: productDoc.data().downloadUrl }); 
+                        // Capture download URL for successful purchase
+                        productsToUpdate.push({ 
+                            name: item.name, 
+                            fileUrl: productDoc.data().downloadUrl 
+                        }); 
                         totalAmount += item.price * item.quantity;
                     }
 
                     // Log the successful transaction and simulated delivery
                     console.log("Transaction successful. Inventory updated. Total Paid:", totalAmount);
                     
-                    return productsToUpdate;
+                    return productsToUpdate; // Return list of purchased files
                 });
-                return true; // Transaction success
+                return purchasedFiles; // Return files on success
             } catch (error) {
                 console.error("Transaction failed: ", error);
                 // Instead of alert(), use a console error or a custom UI message
@@ -440,6 +443,31 @@
                 return false; // Transaction failure
             }
         }
+        
+        // New function to display download links
+        function displayDownloadLinks(files) {
+            const listHtml = files.map(file => `
+                <li class="p-2 border-b last:border-b-0">
+                    <a href="${file.fileUrl}" 
+                       target="_blank" 
+                       class="text-blue-600 hover:text-blue-800 font-medium break-words"
+                       download="${file.name.replace(/[^a-z0-9]/gi, '_')}.zip">
+                       ⬇️ ${file.name} (คลิกเพื่อดาวน์โหลด)
+                    </a>
+                </li>
+            `).join('');
+            
+            successMessageEl.innerHTML = `
+                <p class="font-bold mb-2">ชำระเงินสำเร็จ!</p>
+                <p>สินค้าดิจิทัลพร้อมดาวน์โหลดแล้ว:</p>
+                <ul class="list-none mt-2 p-0 bg-white rounded shadow-inner">
+                    ${listHtml}
+                </ul>
+                <p class="text-xs mt-2 text-gray-700">สต็อกสินค้าถูกปรับปรุงแล้ว</p>
+            `;
+            successMessageEl.classList.remove('hidden');
+        }
+
 
         // --- Auth Handlers ---
 
@@ -584,8 +612,12 @@
                 
                 // 1. Clear previous QR
                 document.getElementById('qrcode').innerHTML = '';
-                // 2. Generate PromptPay Simulation Data
-                const qrData = `PromptPay ID: ${PROMPT_PAY_ID}\nAmount: ${total.toFixed(2)} THB\n(Simulated Payment)`;
+                
+                // 2. Generate PromptPay QR String (Real format simulation)
+                // Note: We use a simple structure that banking apps *might* recognize for the amount
+                const amountFormatted = total.toFixed(2);
+                // String format: [PromptPay ID or Phone Number] + Amount
+                const qrData = `${PROMPT_PAY_ID}\n${amountFormatted}`;
                 
                 // 3. Generate QR Code
                 new QRCode(document.getElementById("qrcode"), {
@@ -613,29 +645,33 @@
             if (state.cart.length === 0) return;
             
             confirmPaymentBtn.disabled = true;
-            confirmPaymentBtn.textContent = 'กำลังดำเนินการ...';
+            confirmPaymentBtn.textContent = 'กำลังดำเนินการตัดสต็อก...';
 
-            const success = await updateStock(state.cart);
+            // Run transaction and capture the list of purchased files
+            const purchasedFiles = await updateStock(state.cart);
             
-            if (success) {
+            if (purchasedFiles && purchasedFiles.length > 0) {
                 // Payment and stock update successful
-                successMessageEl.classList.remove('hidden');
+                
+                // 1. Display download links
+                displayDownloadLinks(purchasedFiles);
+                
+                // 2. Hide confirmation button and clean up
                 confirmPaymentBtn.classList.add('hidden');
                 
-                // Clear cart after a successful transaction
+                // 3. Clear cart after a successful transaction
                 state.cart = [];
                 updateCartUI();
 
-                // Automatically close modal after 3 seconds
+                // Automatically close modal after 10 seconds (เพื่อให้ผู้ใช้มีเวลาดูลิงก์)
                 setTimeout(() => {
                     toggleCheckoutModal(false);
-                }, 3000);
+                }, 10000); // 10 วินาที
 
             } else {
-                // Transaction failed (e.g., stock was insufficient)
+                // Transaction failed (error handling is inside updateStock)
                 confirmPaymentBtn.disabled = false;
                 confirmPaymentBtn.textContent = 'ยืนยันการชำระเงิน';
-                // The error alert is handled inside updateStock()
             }
         }
 
