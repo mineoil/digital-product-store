@@ -281,8 +281,15 @@
             currentView: 'shop', // 'shop' or 'admin'
         };
 
+        // ADMINS LIST: เพิ่มอีเมลผู้ดูแลคนอื่น ๆ ที่นี่ (ต้องสร้างบัญชีใน Firebase Auth ด้วย)
+        const ADMIN_EMAILS = [
+            'admin@example.com', // Primary admin (used in default login form)
+            'contributor1@example.com', // Example secondary admin
+            // สามารถเพิ่มอีเมลอื่น ๆ ได้ที่นี่
+        ];
+
         const PROMPT_PAY_ID = '0812345678'; // ID PromptPay สมมติ
-        const ADMIN_EMAIL = 'admin@example.com'; // Admin user email
+        const ADMIN_EMAIL = 'admin@example.com'; // Primary admin for default login form
         
         // Get DOM Elements
         const authStatusEl = document.getElementById('auth-status');
@@ -348,6 +355,11 @@
             }
         }
         
+        // Function to check if the current user is an admin
+        function isAdmin(userEmail) {
+            return ADMIN_EMAILS.includes(userEmail);
+        }
+
         // Function to wait until Firebase Auth state is ready
         function waitForAuth() {
             return new Promise((resolve) => {
@@ -403,10 +415,10 @@
 
         // Add a new product (Admin function)
         async function addProduct(product) {
-            // Check if current user is the Admin
-            if (auth.currentUser?.email !== ADMIN_EMAIL) {
+            // Check if current user is an Admin
+            if (!auth.currentUser || !isAdmin(auth.currentUser.email)) {
                 console.error("Permission denied: Not an admin.");
-                return;
+                return false; // Return false on permission error
             }
             try {
                 // เปลี่ยนสถานะปุ่มเป็นกำลังดำเนินการ
@@ -428,14 +440,15 @@
                 const submitButton = document.querySelector('#add-product-form button[type="submit"]');
                 submitButton.disabled = false;
                 submitButton.textContent = 'เพิ่มสินค้า';
+                alert('เกิดข้อผิดพลาดในการบันทึกสินค้า (ตรวจสอบ Firestore Rules และสิทธิ์)');
                 return false; // เพิ่มไม่สำเร็จ
             }
         }
 
         // Delete a product (Admin function)
         async function deleteProduct(productId) {
-            // Check if current user is the Admin
-            if (auth.currentUser?.email !== ADMIN_EMAIL) {
+            // Check if current user is an Admin
+            if (!auth.currentUser || !isAdmin(auth.currentUser.email)) {
                 console.error("Permission denied: Not an admin.");
                 return;
             }
@@ -544,7 +557,7 @@
         
         // Handles the top-right Login/Logout button
         function handleAuthClick() {
-            if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
+            if (auth.currentUser && isAdmin(auth.currentUser.email)) {
                 // If logged in as Admin, sign out
                 signOut(auth);
                 // ถ้าอยู่ในหน้า Admin ให้กลับไปหน้า Shop เมื่อ Logout
@@ -560,7 +573,7 @@
         
         // Handles the FAB button click
         function toggleAdminView() {
-            if (auth.currentUser?.email === ADMIN_EMAIL) {
+            if (auth.currentUser?.email && isAdmin(auth.currentUser.email)) {
                 // ถ้าเป็น Admin อยู่แล้ว ให้สลับไปมาระหว่าง Shop กับ Admin Panel
                 if (state.currentView === 'shop') {
                     toggleView('admin');
@@ -593,8 +606,8 @@
                 // Use Firebase real sign-in for Admin
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 
-                // Check if the signed-in user is the defined admin
-                if (userCredential.user.email === ADMIN_EMAIL) {
+                // Check if the signed-in user is in the Admin list
+                if (isAdmin(userCredential.user.email)) {
                     // Login successful
                     toggleAdminLoginModal(false); // Close modal
                     // UI update is handled by onAuthStateChanged listener
@@ -602,9 +615,9 @@
                     // Switch to Admin view
                     toggleView('admin');
                 } else {
-                    // Logged in, but not the designated admin
+                    // Logged in, but not in the designated Admin list
                     signOut(auth); // Force sign out
-                    adminErrorMsgElModal.textContent = 'บัญชีนี้ไม่ใช่บัญชีผู้ดูแลระบบที่ถูกต้อง';
+                    adminErrorMsgElModal.textContent = 'บัญชีนี้ไม่มีสิทธิ์เป็นผู้ดูแลระบบ';
                     adminErrorMsgElModal.classList.remove('hidden');
                 }
 
@@ -809,7 +822,8 @@
         function renderAdminProducts() {
             adminProductListEl.innerHTML = '';
             
-            if (auth?.currentUser?.email !== ADMIN_EMAIL) {
+            // Check if current user is ANY of the admins
+            if (!auth?.currentUser?.email || !isAdmin(auth.currentUser.email)) {
                 adminProductListEl.innerHTML = `<p class="text-red-500">คุณไม่มีสิทธิ์เข้าถึงข้อมูลส่วนนี้ (กรุณาล็อคอิน Admin)</p>`;
                 return;
             }
