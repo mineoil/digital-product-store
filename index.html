@@ -211,7 +211,8 @@
         // Configuration for your own Firebase project (จาก product-41b13)
         // **นี่คือ Config ที่ถูกรวมและแก้ไขแล้ว**
         const APP_FIREBASE_CONFIG = {
-            apiKey: "AIzaSyBOeOmKM1BOFhChBfM0D-cJFNgjqiSr-ZI", // NEW KEY INSERTED HERE
+            // NEW API KEY INSERTED HERE
+            apiKey: "AIzaSyBOeOmKM1BOFhChBfM0D-cJFNgjqiSr-ZI", 
             authDomain: "product-41b13.firebaseapp.com",
             projectId: "product-41b13",
             storageBucket: "product-41b13.appspot.com", 
@@ -777,6 +778,34 @@
             e.target.reset();
             alert('เพิ่มสินค้าเรียบร้อยแล้ว!');
         });
+        
+        // --- Security Handlers (ป้องกันการดูโค้ด) ---
+        
+        // ป้องกันการคลิกขวา (Context Menu)
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            console.log("Right-click is disabled for security reasons.");
+        });
+
+        // ป้องกันปุ่มลัด (Ctrl+Shift+I, Ctrl+U, F12)
+        document.addEventListener('keydown', (e) => {
+            // F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                console.log("F12 is disabled for security reasons.");
+            }
+            // Ctrl+Shift+I (Windows/Linux) or Cmd+Option+I (Mac)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                console.log("Ctrl+Shift+I is disabled for security reasons.");
+            }
+            // Ctrl+U (View Source)
+            if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+                e.preventDefault();
+                console.log("Ctrl+U is disabled for security reasons.");
+            }
+        });
+
 
         // Expose functions to global scope for HTML event handlers
         window.initializeFirebase = initializeFirebase;
