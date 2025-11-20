@@ -15,66 +15,68 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #f4f7f9; /* สีพื้นหลังอ่อน ๆ คล้าย GitHub */
+            background-color: #f0f3f8; /* สีพื้นหลังอ่อนลง */
         }
         .header-bg {
             background-color: #ffffff; /* พื้นหลัง Header สีขาว */
             border-bottom: 1px solid #e1e4e8; /* เส้นขอบด้านล่างบาง ๆ */
         }
         .main-container {
-            max-width: 1280px; /* กว้างขึ้นคล้ายหน้าจอคอมพิวเตอร์ */
+            max-width: 1400px; /* เพิ่มความกว้าง */
         }
         .product-card { 
-            transition: transform 0.2s, box-shadow 0.2s; 
-            border: 1px solid #d1d5db; /* ขอบบาง ๆ คล้ายองค์ประกอบในเว็บ */
-            /* ปรับปรุง Card */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
+            border: 1px solid #e5e7eb; /* ขอบบาง ๆ */
+            border-radius: 12px; /* ขอบมนมากขึ้น */
+            /* ปรับปรุง Card: เงาที่ดูพรีเมียมขึ้น */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
         .product-card:hover { 
-            transform: translateY(-4px); /* ยกขึ้นเล็กน้อย */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); 
+            transform: translateY(-5px); /* ยกขึ้นเล็กน้อย */
+            box-shadow: 0 20px 25px -5px rgba(246, 192, 44, 0.2), 0 10px 10px -5px rgba(246, 192, 44, 0.1); 
         }
         .btn-primary { 
             background-color: #f6c02c; /* สีเหลืองทอง/น้ำผึ้ง */
-            border-radius: 6px; 
-            padding: 0.6rem 1.25rem; 
-            color: #1a202c; /* Text สีเข้ม */
+            border-radius: 8px; /* ขอบมนขึ้น */
+            padding: 0.75rem 1.5rem; 
+            color: #1a202c; 
             font-weight: 700;
-            transition: background-color 0.2s; 
+            transition: background-color 0.2s, transform 0.1s; 
         }
         .btn-primary:hover { 
             background-color: #e0ac25; 
+            transform: scale(1.02);
         }
         .logo-text {
-            /* สีของผึ้ง (เหลืองเข้ม) */
             color: #f6c02c;
-            /* สีของรังผึ้ง (น้ำตาลเข้ม) */
-            background-color: #3b82f6; 
+            background-color: #1f3b8b; /* น้ำเงินเข้ม */
+            padding: 4px 8px;
+            border-radius: 6px;
         }
         .product-image-container {
-            height: 128px; /* Fixed height for product image area */
-            background-color: #fffbeb; /* Light yellow background */
+            height: 150px; /* เพิ่มความสูงรูปภาพ */
+            background-color: #fffbeb; 
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border-radius: 8px; /* เพิ่มขอบมน */
+            border-radius: 8px;
         }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <!-- Header Area (คล้าย Navigation Bar ของ GitHub) -->
-    <header class="header-bg p-4 shadow-sm mb-6 sticky top-0 z-10">
+    <!-- Header Area (Modern App Bar) -->
+    <header class="header-bg p-5 shadow-lg mb-8 sticky top-0 z-10">
         <div class="main-container mx-auto flex justify-between items-center">
-            <!-- Logo with 'B' (Bee) -->
-            <div class="flex items-center space-x-2">
-                <span class="text-3xl font-extrabold px-2 rounded-lg logo-text">B</span>
-                <h1 class="text-xl font-bold text-gray-800">BeeSmart Digital</h1>
+            <!-- Logo with 'B' (BeeSmart) -->
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl font-extrabold logo-text">B</span>
+                <h1 class="text-2xl font-black text-gray-800 tracking-wider">BeeSmart Digital</h1>
             </div>
 
             <div class="flex items-center space-x-4">
-                <button id="cart-toggle-btn" class="relative p-2 rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition">
+                <button id="cart-toggle-btn" class="relative p-3 rounded-full bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition">
                     <!-- Cart Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -85,10 +87,10 @@
                 <!-- Auth Status and Admin/Login Button -->
                 <div id="auth-status" class="text-sm font-medium text-gray-700 flex items-center space-x-2">
                     <span id="user-display" class="hidden sm:inline-block">กำลังโหลด...</span>
-                    <button id="admin-view-btn" class="text-indigo-600 hover:text-indigo-800 p-2 rounded-lg hover:bg-gray-100 text-sm font-semibold hidden" onclick="toggleView('admin')">
+                    <button id="admin-view-btn" class="px-3 py-2 rounded-lg text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 text-sm font-semibold hidden" onclick="toggleView('admin')">
                         Admin
                     </button>
-                    <button id="login-logout-btn" class="p-2 rounded-lg text-red-600 hover:text-red-800 hover:bg-gray-100 text-sm font-semibold" onclick="handleAuthClick()">
+                    <button id="login-logout-btn" class="px-3 py-2 rounded-lg text-red-600 hover:text-red-800 hover:bg-red-50 text-sm font-semibold" onclick="handleAuthClick()">
                         เข้าสู่ระบบ
                     </button>
                 </div>
@@ -96,54 +98,56 @@
         </div>
     </header>
 
-    <!-- Main Content Area with Repository-like structure -->
+    <!-- Main Content Area -->
     <div id="app" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
 
-        <!-- Navigation/Status Bar (จำลองแถบ Code/Issues/PR) -->
-        <nav class="flex space-x-4 border-b border-gray-300 mb-6 text-gray-600 font-medium">
-            <button class="py-2 px-3 border-b-2 border-blue-500 text-blue-500 transition duration-150" onclick="toggleView('shop')" id="nav-shop">
+        <!-- Navigation/Status Bar (Tab-like structure) -->
+        <nav class="flex space-x-6 border-b border-gray-300 mb-8 text-gray-600 font-medium text-lg">
+            <button class="py-3 px-4 border-b-4 border-blue-600 text-blue-600 transition duration-150" onclick="toggleView('shop')" id="nav-shop">
                 สินค้า (Products)
             </button>
-            <button class="py-2 px-3 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-500 transition duration-150" onclick="toggleView('admin')" id="nav-admin">
+            <button class="py-3 px-4 border-b-4 border-transparent hover:border-blue-300 hover:text-blue-600 transition duration-150" onclick="toggleView('admin')" id="nav-admin">
                 ตั้งค่าผู้ดูแล (Admin)
             </button>
         </nav>
 
         <!-- Main View (Shop) -->
-        <main id="main-view" class="space-y-8">
+        <main id="main-view" class="space-y-10">
             <section id="shop-view">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">รายการสินค้าทั้งหมด</h2>
-                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-3">🍯 คอลเลกชันสินค้าดิจิทัล</h2>
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     <!-- Products will be injected here -->
-                    <div class="col-span-full text-center py-12 text-gray-500" id="loading-text">กำลังโหลดสินค้า...</div>
+                    <div class="col-span-full text-center py-16 text-gray-500 text-xl" id="loading-text">กำลังโหลดสินค้า...</div>
                 </div>
             </section>
 
             <!-- Checkout Modal (Hidden by default) -->
-            <div id="checkout-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'checkout-modal') toggleCheckoutModal(false)">
-                <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg" onclick="event.stopPropagation()">
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">ขั้นตอนการชำระเงิน</h3>
-                    <div class="space-y-4 mb-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200">
-                        <p class="text-sm font-semibold text-gray-700">ยอดที่ต้องชำระ:</p>
-                        <p class="text-4xl font-extrabold text-red-600" id="checkout-total">0.00 บาท</p>
-                        <p class="text-xs text-gray-500">โอนเงินเข้า PromptPay ID: **<span id="promptpay-id-display"></span>** (จำลอง)</p>
+            <div id="checkout-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'checkout-modal') toggleCheckoutModal(false)">
+                <div class="bg-white rounded-2xl shadow-3xl p-8 w-full max-w-lg transform transition-all duration-300 scale-100" onclick="event.stopPropagation()">
+                    <h3 class="text-3xl font-black mb-6 text-gray-800 border-b pb-3">ขั้นตอนการชำระเงิน</h3>
+                    
+                    <!-- Total Price Box -->
+                    <div class="space-y-4 mb-6 p-5 rounded-xl bg-yellow-50 border border-yellow-200">
+                        <p class="text-lg font-semibold text-gray-700">ยอดที่ต้องชำระ:</p>
+                        <p class="text-5xl font-extrabold text-red-600" id="checkout-total">0.00 บาท</p>
+                        <p class="text-xs text-gray-500">โอนเข้า PromptPay ID: **<span id="promptpay-id-display"></span>** (จำลอง)</p>
                     </div>
 
                     <div id="qr-code-container" class="flex justify-center mb-6">
-                        <div id="qrcode" class="p-3 border-4 border-blue-500 rounded-lg bg-white shadow-md"></div>
+                        <div id="qrcode" class="p-4 border-4 border-indigo-600 rounded-xl bg-white shadow-xl"></div>
                     </div>
                     
-                    <p class="text-center text-sm text-gray-600 mb-4">เมื่อโอนเงินสำเร็จแล้ว กรุณากดยืนยันด้านล่าง</p>
+                    <p class="text-center text-md text-gray-700 mb-6">เมื่อโอนเงินสำเร็จแล้ว (สแกน QR Code แล้ว) กรุณากดยืนยันด้านล่าง</p>
 
-                    <button class="btn-primary w-full text-lg py-3" id="confirm-payment-btn" onclick="simulatePaymentConfirmation()">
-                        ยืนยันการชำระเงิน
+                    <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white w-full text-xl py-4" id="confirm-payment-btn" onclick="simulatePaymentConfirmation()">
+                        ✅ ยืนยันการชำระเงิน
                     </button>
-                    <button class="mt-3 w-full text-gray-600 hover:text-gray-800" onclick="toggleCheckoutModal(false)">
+                    <button class="mt-4 w-full text-gray-600 hover:text-gray-900 font-semibold" onclick="toggleCheckoutModal(false)">
                         ยกเลิก
                     </button>
                     
                     <!-- Confirmation Message (ใช้สำหรับแสดงลิงก์ดาวน์โหลด) -->
-                    <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-4 rounded-lg" role="alert">
+                    <div id="success-message" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-6 rounded-lg shadow-md" role="alert">
                         <!-- Download links will be injected here -->
                     </div>
                 </div>
@@ -151,25 +155,27 @@
         </main>
 
         <!-- Admin Panel View -->
-        <section id="admin-view" class="hidden p-8 bg-white rounded-xl shadow-xl border border-gray-200">
-            <h2 class="text-3xl font-bold text-indigo-700 mb-6 border-b pb-2">แผงควบคุมผู้ดูแล (Admin Panel)</h2>
+        <section id="admin-view" class="hidden p-10 bg-white rounded-2xl shadow-2xl border border-gray-200">
+            <h2 class="text-3xl font-black text-indigo-700 mb-8 border-b pb-3">⚙️ แผงควบคุมผู้ดูแล (Admin Panel)</h2>
             
             <div id="admin-login-area">
-                <h3 class="text-xl font-semibold mb-3">เข้าสู่ระบบผู้ดูแล</h3>
-                <input type="email" id="admin-email" placeholder="อีเมล" class="w-full p-3 mb-3 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="admin@example.com">
-                <input type="password" id="admin-password" placeholder="รหัสผ่าน" class="w-full p-3 mb-4 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500" value="password1234">
-                <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 w-full" onclick="adminLogin()">เข้าสู่ระบบ</button>
-                <p class="text-sm text-red-500 mt-2 hidden" id="admin-error-msg"></p>
-                <p class="text-xs text-gray-500 mt-3">สำหรับทดสอบ: ใช้ admin@example.com / password1234</p>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">เข้าสู่ระบบผู้ดูแล</h3>
+                <input type="email" id="admin-email" placeholder="อีเมล" class="w-full p-4 mb-3 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500" value="admin@example.com">
+                <input type="password" id="admin-password" placeholder="รหัสผ่าน" class="w-full p-4 mb-6 border border-gray-300 rounded-xl focus:ring-indigo-500 focus:border-indigo-500" value="password1234">
+                <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white w-full text-lg" onclick="adminLogin()">เข้าสู่ระบบ</button>
+                <p class="text-sm text-red-500 mt-3 hidden" id="admin-error-msg"></p>
+                <p class="text-xs text-gray-500 mt-4">สำหรับทดสอบ: ใช้ admin@example.com / password1234</p>
             </div>
 
             <div id="admin-control-area" class="hidden">
-                <h3 class="text-2xl font-semibold mb-4 border-b pb-2">เพิ่มสินค้าใหม่</h3>
-                <form id="add-product-form" class="space-y-4">
+                <h3 class="text-2xl font-bold mb-6 border-b pb-2">➕ เพิ่มสินค้าใหม่</h3>
+                <form id="add-product-form" class="space-y-5">
                     <input type="text" id="p-name" placeholder="ชื่อสินค้าดิจิทัล" required class="w-full p-3 border rounded-lg">
-                    <textarea type="text" id="p-description" placeholder="รายละเอียดสินค้า" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
-                    <input type="number" id="p-price" placeholder="ราคา (บาท)" required min="1" class="w-full p-3 border rounded-lg">
-                    <input type="number" id="p-stock" placeholder="จำนวนสต็อก" required min="1" class="w-full p-3 border rounded-lg">
+                    <textarea type="text" id="p-description" placeholder="รายละเอียดสินค้า (สั้นๆ)" rows="2" required class="w-full p-3 border rounded-lg"></textarea>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="p-price" placeholder="ราคา (บาท)" required min="1" class="w-full p-3 border rounded-lg">
+                        <input type="number" id="p-stock" placeholder="จำนวนสต็อก" required min="1" class="w-full p-3 border rounded-lg">
+                    </div>
                     
                     <!-- ช่องสำหรับลิงก์รูปภาพสินค้า (จำลองการอัปโหลด) -->
                     <input type="text" id="p-image-url" placeholder="ลิงก์รูปภาพสินค้า (Image URL)" 
@@ -180,14 +186,14 @@
                     <input type="text" id="p-download-url" placeholder="ลิงก์ไฟล์สำหรับดาวน์โหลด (Download URL)" 
                            value="https://example.com/download/product-123" required class="w-full p-3 border rounded-lg">
                            
-                    <button type="submit" class="btn-primary bg-green-600 hover:bg-green-700 w-full">เพิ่มสินค้า</button>
+                    <button type="submit" class="btn-primary bg-green-600 hover:bg-green-700 text-white w-full text-lg">เพิ่มสินค้า</button>
                 </form>
 
-                <h3 class="text-2xl font-semibold mt-8 mb-4 border-b pb-2">สินค้าที่มีอยู่</h3>
+                <h3 class="text-2xl font-bold mt-10 mb-5 border-b pb-2">📦 สินค้าที่มีอยู่</h3>
                 <div id="admin-product-list" class="space-y-4">
                     <!-- Admin product list will be injected here -->
                 </div>
-                <button class="mt-6 text-indigo-600 hover:text-indigo-800" onclick="toggleView('shop')">กลับไปที่ร้านค้า</button>
+                <button class="mt-8 text-indigo-600 hover:text-indigo-800 font-semibold" onclick="toggleView('shop')">← กลับไปที่หน้าร้านค้า</button>
             </div>
         </section>
 
@@ -451,23 +457,27 @@
         // New function to display download links
         function displayDownloadLinks(files) {
             const listHtml = files.map(file => `
-                <li class="p-2 border-b last:border-b-0">
+                <li class="p-2 border-b last:border-b-0 flex justify-between items-center bg-white rounded-lg shadow-sm mb-2">
+                    <span class="font-medium text-gray-800">${file.name}</span>
                     <a href="${file.fileUrl}" 
                        target="_blank" 
-                       class="text-blue-600 hover:text-blue-800 font-medium break-words"
+                       class="text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1 p-2 bg-blue-50 rounded-full hover:bg-blue-100 transition"
                        download="${file.name.replace(/[^a-z0-9]/gi, '_')}.zip">
-                       ⬇️ ${file.name} (คลิกเพื่อดาวน์โหลด)
+                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                           <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                       </svg>
+                       <span>ดาวน์โหลด</span>
                     </a>
                 </li>
             `).join('');
             
             successMessageEl.innerHTML = `
-                <p class="font-bold mb-2">ชำระเงินสำเร็จ!</p>
-                <p>สินค้าดิจิทัลพร้อมดาวน์โหลดแล้ว:</p>
-                <ul class="list-none mt-2 p-0 bg-white rounded shadow-inner">
+                <p class="font-bold mb-3 text-lg text-green-700">🎉 ชำระเงินสำเร็จแล้ว!</p>
+                <p class="text-sm text-gray-700 mb-2">สินค้าดิจิทัลพร้อมดาวน์โหลดแล้ว กรุณาคลิกที่ลิงก์ด้านล่าง:</p>
+                <ul class="list-none mt-4 p-0 space-y-2">
                     ${listHtml}
                 </ul>
-                <p class="text-xs mt-2 text-gray-700">สต็อกสินค้าถูกปรับปรุงแล้ว</p>
+                <p class="text-xs mt-4 text-gray-600">สต็อกสินค้าถูกปรับปรุงเรียบร้อยแล้ว</p>
             `;
             successMessageEl.classList.remove('hidden');
         }
@@ -496,7 +506,7 @@
             adminErrorMsgEl.classList.add('hidden'); // Clear previous error
 
             if (!auth) {
-                adminErrorMsgEl.textContent = 'ข้อผิดพลาด: ระบบ Firebase Authentication ยังไม่พร้อม';
+                adminErrorMsgMsgEl.textContent = 'ข้อผิดพลาด: ระบบ Firebase Authentication ยังไม่พร้อม';
                 adminErrorMsgEl.classList.remove('hidden');
                 console.error('Firebase Auth instance not available.');
                 return;
@@ -709,7 +719,7 @@
                         
                         <h3 class="text-xl font-semibold text-gray-800 truncate" title="${product.name}">${product.name}</h3>
                         <p class="text-gray-600 text-sm mb-2">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</p>
-                        <p class="text-2xl font-bold text-green-600 mb-4">${product.price.toFixed(2)} บาท</p>
+                        <p class="text-3xl font-bold text-green-600 mb-4">${product.price.toFixed(2)} บาท</p>
                         <p class="text-xs text-gray-500 mb-4">เหลือ: ${product.stock} ชิ้น</p>
                         
                         <button onclick="addToCart('${product.id}')" 
