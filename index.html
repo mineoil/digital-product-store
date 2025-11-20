@@ -27,10 +27,12 @@
         .product-card { 
             transition: transform 0.2s, box-shadow 0.2s; 
             border: 1px solid #d1d5db; /* ขอบบาง ๆ คล้ายองค์ประกอบในเว็บ */
+            /* ปรับปรุง Card */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
         }
         .product-card:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
+            transform: translateY(-4px); /* ยกขึ้นเล็กน้อย */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); 
         }
         .btn-primary { 
             background-color: #f6c02c; /* สีเหลืองทอง/น้ำผึ้ง */
@@ -56,6 +58,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border-radius: 8px; /* เพิ่มขอบมน */
         }
     </style>
 </head>
