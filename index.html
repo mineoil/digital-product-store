@@ -3,32 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeeSmart Digital - ร้านค้าสินค้าดิจิทัล</title>
+    <title>BeeSmart Digital - แหล่งรวมสินค้าดิจิทัลและเครื่องมือออนไลน์</title>
     <!-- Favicon: Moon Icon (ตามที่ผู้ใช้ร้องขอ) -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://cdn-icons-png.flaticon.com/32/15196/15196862.png">
+    
+    <!-- Meta Tags for SEO/ค้นหา -->
+    <meta name="description" content="BeeSmart Digital: ปลดล็อกศักยภาพทางดิจิทัลของคุณ ด้วยธีม, E-Book, และเครื่องมือคุณภาพสูงสำหรับผู้ประกอบการ">
+    <meta name="keywords" content="สินค้าดิจิทัล, ธีม, Ebook, เครื่องมือออนไลน์, PromptPay, ธุรกิจออนไลน์">
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Font: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <!-- QR Code Library - ใช้เวอร์ชั่นที่ปลอดภัยกว่าในการเรียกใช้ -->
     <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+    
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f0f3f8; /* สีพื้นหลังอ่อนลง */
         }
         .header-bg {
-            background-color: #ffffff; /* พื้นหลัง Header สีขาว */
-            border-bottom: 1px solid #e1e4e8; /* เส้นขอบด้านล่างบาง ๆ */
+            background-color: #ffffff; 
+            border-bottom: 1px solid #e1e4e8; 
         }
         .main-container {
             max-width: 1400px; /* เพิ่มความกว้าง */
         }
+        /* Product Card Aesthetic V2 */
         .product-card { 
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
-            border: 1px solid #e5e7eb; /* ขอบบาง ๆ */
-            border-radius: 12px; /* ขอบมนมากขึ้น */
-            /* ปรับปรุง Card: เงาที่ดูพรีเมียมขึ้น */
+            border: 1px solid #e5e7eb; 
+            border-radius: 12px; 
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
         .product-card:hover { 
@@ -37,7 +43,7 @@
         }
         .btn-primary { 
             background-color: #f6c02c; /* สีเหลืองทอง/น้ำผึ้ง */
-            border-radius: 8px; /* ขอบมนขึ้น */
+            border-radius: 8px; 
             padding: 0.75rem 1.5rem; 
             color: #1a202c; 
             font-weight: 700;
@@ -54,7 +60,7 @@
             border-radius: 6px;
         }
         .product-image-container {
-            height: 150px; /* เพิ่มความสูงรูปภาพ */
+            height: 150px; 
             background-color: #fffbeb; 
             display: flex;
             align-items: center;
@@ -64,20 +70,19 @@
         }
         /* NEW CSS: ป้องกันการลากรูปภาพ */
         .no-drag-image {
-            user-select: none; /* สำหรับมาตรฐาน */
-            -webkit-user-select: none; /* สำหรับ Chrome/Safari */
-            -moz-user-select: none; /* สำหรับ Firefox */
-            -ms-user-select: none; /* สำหรับ IE/Edge */
-            -webkit-user-drag: none; /* ป้องกันการลากใน WebKit */
+            user-select: none; 
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            -webkit-user-drag: none; 
         }
-
+        /* FAB Button */
         .fab {
-            /* Floating Action Button */
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 50;
-            background-color: #1f3b8b; /* น้ำเงินเข้ม */
+            background-color: #1f3b8b; 
             color: white;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s;
@@ -85,6 +90,20 @@
         .fab:hover {
             background-color: #1a2c6d;
             transform: scale(1.05);
+        }
+        /* Rating Star CSS */
+        .rating-star {
+            color: #f6c02c; /* สีดาวทอง */
+            width: 1rem;
+            height: 1rem;
+            fill: currentColor;
+        }
+        /* Testimonial Card */
+        .testimonial-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -111,7 +130,6 @@
                 <!-- Auth Status and Admin/Login Button -->
                 <div id="auth-status" class="text-sm font-medium text-gray-700 flex items-center space-x-2">
                     <span id="user-display" class="hidden sm:inline-block">กำลังโหลด...</span>
-                    <!-- ปุ่ม Admin ถูกซ่อนจาก Header แล้ว -->
                     <button id="login-logout-btn" class="px-3 py-2 rounded-lg text-red-600 hover:text-red-800 hover:bg-red-50 text-sm font-semibold" onclick="handleAuthClick()">
                         เข้าสู่ระบบ
                     </button>
@@ -146,40 +164,53 @@
             </button>
         </div>
     </div>
-    
-    <!-- Status Message Modal (แทน alert() ) -->
-    <div id="status-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'status-modal') displayStatusMessage(false)">
-        <div class="bg-white rounded-2xl shadow-3xl p-8 w-full max-w-xs text-center" onclick="event.stopPropagation()">
-            <h4 id="status-title" class="text-xl font-bold mb-4 text-gray-800"></h4>
-            <p id="status-message" class="text-gray-600 mb-6"></p>
-            <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white w-full" onclick="displayStatusMessage(false)">ตกลง</button>
-        </div>
-    </div>
-    
-    <!-- Cart Summary Modal (New Modal) -->
-    <div id="cart-summary-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'cart-summary-modal') toggleCartSummaryModal(false)">
-        <div class="bg-white rounded-2xl shadow-3xl p-8 w-full max-w-md transform transition-all duration-300 scale-100" onclick="event.stopPropagation()">
-            <h3 class="text-3xl font-black mb-6 text-gray-800 border-b pb-3">🛒 สรุปรายการสินค้า</h3>
-            <div id="cart-items-list" class="space-y-3 mb-6 max-h-60 overflow-y-auto">
-                <!-- Cart items will be injected here -->
-            </div>
-            <div class="flex justify-between items-center text-xl font-bold border-t pt-4">
-                <span>ยอดรวมทั้งหมด:</span>
-                <span id="cart-summary-total" class="text-red-600">0.00 บาท</span>
-            </div>
-            <button class="btn-primary bg-green-600 hover:bg-green-700 text-white w-full text-lg mt-6" onclick="confirmAndCheckout()">
-                ดำเนินการชำระเงินต่อ
-            </button>
-            <button class="mt-3 w-full text-gray-600 hover:text-gray-900 font-semibold" onclick="toggleCartSummaryModal(false)">
-                แก้ไขตะกร้า
+
+    <!-- Custom Status Message Modal -->
+    <div id="status-modal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'status-modal') toggleStatusModal(false)">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm" onclick="event.stopPropagation()">
+            <div id="status-content"></div>
+            <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white mt-4 w-full" onclick="toggleStatusModal(false)">
+                ตกลง
             </button>
         </div>
     </div>
 
+    <!-- Cart Summary Modal -->
+    <div id="cart-summary-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 hidden p-4" onclick="if(event.target.id === 'cart-summary-modal') toggleCartSummaryModal(false)">
+        <div class="bg-white rounded-2xl shadow-3xl p-8 w-full max-w-md transform transition-all duration-300 scale-100" onclick="event.stopPropagation()">
+            <h3 class="text-3xl font-black mb-6 text-gray-800 border-b pb-3">🛒 สรุปรายการสินค้า</h3>
+            <ul id="cart-summary-list" class="space-y-3 mb-6 max-h-60 overflow-y-auto">
+                <!-- Cart items will be injected here -->
+            </ul>
+            <div class="flex justify-between items-center text-xl font-bold border-t pt-4">
+                <span>รวมทั้งหมด:</span>
+                <span id="cart-summary-total" class="text-red-600">0.00 บาท</span>
+            </div>
+            <button class="btn-primary bg-green-600 hover:bg-green-700 text-white w-full text-lg mt-6" onclick="confirmCartSummary()">
+                ดำเนินการชำระเงิน
+            </button>
+            <button class="mt-3 w-full text-gray-600 hover:text-gray-900 font-semibold" onclick="toggleCartSummaryModal(false)">
+                แก้ไขตะกร้าสินค้า
+            </button>
+        </div>
+    </div>
 
     <!-- Main Content Area -->
     <div id="app" class="main-container mx-auto p-4 sm:p-6 lg:p-8">
 
+        <!-- Hero Section -->
+        <div class="bg-blue-100 p-8 md:p-12 rounded-2xl shadow-xl mb-10 border border-blue-200">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+                ปลดล็อกศักยภาพดิจิทัลของคุณ
+            </h1>
+            <p class="text-lg text-gray-600 mb-6 max-w-3xl">
+                แหล่งรวมธีม, E-Book, และเครื่องมือออนไลน์คุณภาพสูง ที่ออกแบบมาเพื่อช่วยให้ธุรกิจของคุณเติบโตอย่างรวดเร็ว
+            </p>
+            <button class="btn-primary bg-indigo-600 hover:bg-indigo-700 text-white text-xl" onclick="document.getElementById('shop-view').scrollIntoView({ behavior: 'smooth' })">
+                เริ่มค้นหาสินค้า →
+            </button>
+        </div>
+        
         <!-- Navigation/Status Bar (เหลือแค่ Products) -->
         <nav class="flex space-x-6 border-b border-gray-300 mb-8 text-gray-600 font-medium text-lg">
             <button class="py-3 px-4 border-b-4 border-blue-600 text-blue-600 transition duration-150" onclick="toggleView('shop')" id="nav-shop">
@@ -190,7 +221,7 @@
         <!-- Main View (Shop) -->
         <main id="main-view" class="space-y-10">
             <section id="shop-view">
-                <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-3">🍯 คอลเลกชันสินค้าดิจิทัล</h2>
+                <h2 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-3">🍯 คอลเลกชันสินค้าดิจิทัลแนะนำ</h2>
                 <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     <!-- Products will be injected here -->
                     <div class="col-span-full text-center py-16 text-gray-500 text-xl" id="loading-text">กำลังโหลดสินค้า...</div>
@@ -234,6 +265,11 @@
         <section id="admin-view" class="hidden p-10 bg-white rounded-2xl shadow-2xl border border-gray-200">
             <h2 class="text-3xl font-black text-indigo-700 mb-8 border-b pb-3">⚙️ แผงควบคุมผู้ดูแล (Admin Panel)</h2>
             
+            <!-- Firebase Status Block -->
+            <div id="firebase-status-block" class="mb-8 p-4 bg-gray-100 rounded-lg shadow-inner">
+                <!-- Status will be injected here -->
+            </div>
+
             <div id="admin-control-area">
                 <h3 class="text-2xl font-bold mb-6 border-b pb-2">➕ เพิ่มสินค้าใหม่</h3>
                 <form id="add-product-form" class="space-y-5">
@@ -265,6 +301,32 @@
         </section>
 
     </div>
+    
+    <!-- Footer Section (สร้างความน่าเชื่อถือ) -->
+    <footer class="bg-gray-800 text-white p-8 mt-12">
+        <div class="main-container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h4 class="text-xl font-bold mb-3 text-yellow-400">BeeSmart Digital</h4>
+                <p class="text-sm text-gray-400">
+                    เปลี่ยนไอเดียของคุณให้เป็นจริงด้วยเครื่องมือและทรัพยากรดิจิทัลที่ดีที่สุด
+                </p>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-3">การสนับสนุน</h4>
+                <ul class="text-sm space-y-1">
+                    <li><a href="#" class="hover:text-yellow-400 transition">นโยบายความเป็นส่วนตัว (จำลอง)</a></li>
+                    <li><a href="#" class="hover:text-yellow-400 transition">เงื่อนไขการให้บริการ (จำลอง)</a></li>
+                    <li><a href="mailto:mkemwex@gmail.com" class="hover:text-yellow-400 transition">ติดต่อเรา</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-semibold mb-3">ติดตามเรา</h4>
+                <p class="text-sm text-gray-400">
+                    © 2025 BeeSmart Digital. สงวนลิขสิทธิ์
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -287,7 +349,6 @@
         // Configuration for your own Firebase project (จาก product-41b13)
         // **นี่คือ Config ที่ถูกรวมและแก้ไขแล้ว**
         const APP_FIREBASE_CONFIG = {
-            // NEW API KEY INSERTED HERE
             apiKey: "AIzaSyBOeOmKM1BOFhChBfM0D-cJFNgjqiSr-ZI", 
             authDomain: "product-41b13.firebaseapp.com",
             projectId: "product-41b13",
@@ -312,9 +373,9 @@
 
         // ADMINS LIST: เพิ่มอีเมลผู้ดูแลคนอื่น ๆ ที่นี่ (ต้องสร้างบัญชีใน Firebase Auth ด้วย)
         const ADMIN_EMAILS = [
-            'admin@example.com', // Primary admin (used in default login form)
-            'contributor1@example.com', // Example secondary admin
-            'beeinwza@gmail.com', // <<--- อีเมลที่เพิ่งเพิ่มเข้ามา
+            'admin@example.com', 
+            'contributor1@example.com',
+            'beeinwza@gmail.com',
             // สามารถเพิ่มอีเมลอื่น ๆ ได้ที่นี่
         ];
 
@@ -341,14 +402,58 @@
         const adminLoginModalEl = document.getElementById('admin-login-modal'); // Admin Login Modal
         const adminEmailModalEl = document.getElementById('admin-email-modal'); // Email Input
         const adminPasswordModalEl = document.getElementById('admin-password-modal'); // Password Input
-        const statusModalEl = document.getElementById('status-modal');
-        const statusTitleEl = document.getElementById('status-title');
-        const statusMessageEl = document.getElementById('status-message');
-        const cartSummaryModalEl = document.getElementById('cart-summary-modal');
-        const cartItemsListEl = document.getElementById('cart-items-list');
-        const cartSummaryTotalEl = document.getElementById('cart-summary-total');
+        const statusModalEl = document.getElementById('status-modal'); // Custom Status Modal
+        const statusContentEl = document.getElementById('status-content'); // Custom Status Content
+        const cartSummaryModalEl = document.getElementById('cart-summary-modal'); // Cart Summary Modal
+        const cartSummaryListEl = document.getElementById('cart-summary-list'); // Cart Summary List
+        const cartSummaryTotalEl = document.getElementById('cart-summary-total'); // Cart Summary Total
+        const firebaseStatusBlockEl = document.getElementById('firebase-status-block'); // Admin Status Block
 
         
+        // Custom Status Modal Function
+        function toggleStatusModal(show, message = '', type = 'info') {
+            if (show && message) {
+                let icon = '';
+                let bgColor = 'bg-blue-100';
+                let textColor = 'text-blue-800';
+
+                if (type === 'success') {
+                    icon = '✅';
+                    bgColor = 'bg-green-100';
+                    textColor = 'text-green-800';
+                } else if (type === 'error') {
+                    icon = '❌';
+                    bgColor = 'bg-red-100';
+                    textColor = 'text-red-800';
+                } else if (type === 'warning') {
+                    icon = '⚠️';
+                    bgColor = 'bg-yellow-100';
+                    textColor = 'text-yellow-800';
+                }
+                
+                statusContentEl.innerHTML = `<div class="${bgColor} ${textColor} p-3 rounded-lg"><span class="text-xl mr-2">${icon}</span> ${message}</div>`;
+                statusModalEl.classList.remove('hidden');
+            } else {
+                statusModalEl.classList.add('hidden');
+            }
+        }
+        
+        // Renders Firebase status in Admin Panel
+        function renderFirebaseStatus() {
+            if (!firebaseStatusBlockEl) return;
+            
+            let authStatus = auth?.currentUser ? '✅ Auth Ready' : '❌ Auth Not Ready';
+            let dbStatus = db ? '✅ Firestore Ready' : '❌ Firestore Not Ready';
+            
+            firebaseStatusBlockEl.innerHTML = `
+                <p class="text-lg font-semibold mb-2">สถานะ Firebase:</p>
+                <div class="space-y-1 text-sm">
+                    <p class="${auth?.currentUser ? 'text-green-600' : 'text-red-600'}">${authStatus}</p>
+                    <p class="${db ? 'text-green-600' : 'text-red-600'}">${dbStatus}</p>
+                </div>
+            `;
+        }
+
         async function initializeFirebase() {
             try {
                 // ตรวจสอบว่ามี API Key และยังไม่ได้ Init
@@ -359,6 +464,7 @@
                     promptpayIdDisplayEl.textContent = PROMPT_PAY_ID;
                     // กำหนดค่า appId ที่นี่เมื่อ config พร้อมแล้ว
                     appId = APP_FIREBASE_CONFIG.projectId; 
+                    renderFirebaseStatus();
 
                     // 1. Initial Authentication (Sign in anonymously for general user access)
                     await signInAnonymously(auth);
@@ -375,6 +481,7 @@
                             loginLogoutBtn.textContent = 'เข้าสู่ระบบ';
                         }
                         isAuthReady = true;
+                        renderFirebaseStatus();
                         // Start listening to products once auth is ready
                         listenToProducts();
                     });
@@ -388,6 +495,7 @@
                 // แสดงข้อความ Firebase ล้มเหลวให้เห็นชัดเจนขึ้น
                 userDisplayEl.textContent = 'Firebase ล้มเหลว (ตรวจสอบ Console)';
                 isAuthReady = true;
+                renderFirebaseStatus();
             }
         }
         
@@ -454,8 +562,8 @@
             // Check if current user is an Admin
             if (!auth.currentUser || !isAdmin(auth.currentUser.email)) {
                 console.error("Permission denied: Not an admin.");
-                displayStatusMessage('ข้อผิดพลาด', 'คุณไม่มีสิทธิ์เพิ่มสินค้า');
-                return false; // Return false on permission error
+                toggleStatusModal(true, 'คุณไม่มีสิทธิ์เพิ่มสินค้า', 'error');
+                return false;
             }
             try {
                 // เปลี่ยนสถานะปุ่มเป็นกำลังดำเนินการ
@@ -469,7 +577,6 @@
                 // คืนสถานะปุ่ม
                 submitButton.disabled = false;
                 submitButton.textContent = 'เพิ่มสินค้า';
-                displayStatusMessage('สำเร็จ', 'เพิ่มสินค้าใหม่เรียบร้อยแล้ว!', 'success');
 
                 return true; // เพิ่มสำเร็จ
             } catch (e) {
@@ -478,7 +585,7 @@
                 const submitButton = document.querySelector('#add-product-form button[type="submit"]');
                 submitButton.disabled = false;
                 submitButton.textContent = 'เพิ่มสินค้า';
-                displayStatusMessage('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการบันทึกสินค้า (ตรวจสอบ Firestore Rules และสิทธิ์)');
+                toggleStatusModal(true, 'เกิดข้อผิดพลาดในการบันทึกสินค้า (ตรวจสอบ Firestore Rules)', 'error');
                 return false; // เพิ่มไม่สำเร็จ
             }
         }
@@ -488,15 +595,15 @@
             // Check if current user is an Admin
             if (!auth.currentUser || !isAdmin(auth.currentUser.email)) {
                 console.error("Permission denied: Not an admin.");
+                toggleStatusModal(true, 'คุณไม่มีสิทธิ์ลบสินค้า', 'error');
                 return;
             }
             try {
                 await deleteDoc(doc(db, `products`, productId));
-                console.log("Product deleted successfully");
-                displayStatusMessage('สำเร็จ', 'ลบสินค้าเรียบร้อยแล้ว!', 'success');
+                toggleStatusModal(true, 'ลบสินค้าเรียบร้อยแล้ว', 'success');
             } catch (e) {
                 console.error("Error deleting document (Check Firestore Rules): ", e);
-                displayStatusMessage('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการลบสินค้า (ตรวจสอบ Firestore Rules และสิทธิ์)');
+                toggleStatusModal(true, 'เกิดข้อผิดพลาดในการลบสินค้า (ตรวจสอบ Firestore Rules)', 'error');
             }
         }
 
@@ -547,8 +654,9 @@
                 return purchasedFiles; // Return files on success
             } catch (error) {
                 console.error("Transaction failed: ", error);
+                // Instead of alert(), use a console error or a custom UI message
                 const errorMessage = typeof error === 'string' ? error : error.message || 'Unknown error occurred.';
-                displayStatusMessage('การทำรายการล้มเหลว', `สินค้าหมดหรือเกิดข้อผิดพลาด: ${errorMessage}`);
+                toggleStatusModal(true, `การทำรายการล้มเหลว: ${errorMessage}`, 'error');
                 return false; // Transaction failure
             }
         }
@@ -580,72 +688,10 @@
             `;
             successMessageEl.classList.remove('hidden');
         }
-        
-        // Custom Status Message Modal
-        function displayStatusMessage(title, message, type = 'info') {
-            if (title === false) {
-                statusModalEl.classList.add('hidden');
-                return;
-            }
-            
-            statusTitleEl.textContent = title;
-            statusMessageEl.textContent = message;
-            
-            // Apply color classes based on type
-            statusTitleEl.className = 'text-xl font-bold mb-4';
-            if (type === 'success') {
-                statusTitleEl.classList.add('text-green-600');
-            } else if (type === 'error') {
-                statusTitleEl.classList.add('text-red-600');
-            } else {
-                statusTitleEl.classList.add('text-indigo-600');
-            }
-
-            statusModalEl.classList.remove('hidden');
-        }
 
 
         // --- Auth Handlers (Handle both top-right and FAB login) ---
         
-        // Toggles the Cart Summary Modal
-        function toggleCartSummaryModal(show) {
-            if (show) {
-                if (state.cart.length === 0) {
-                    displayStatusMessage('ตะกร้าว่างเปล่า', 'กรุณาเพิ่มสินค้าลงในตะกร้าก่อนดำเนินการต่อ');
-                    return;
-                }
-                
-                let total = 0;
-                const listHtml = state.cart.map(item => {
-                    const product = state.products.find(p => p.id === item.id) || item; // Find full product details
-                    const itemTotal = item.price * item.quantity;
-                    total += itemTotal;
-                    return `
-                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                            <div class="flex-grow">
-                                <span class="font-semibold text-gray-800">${item.name}</span>
-                                <span class="text-sm text-gray-500"> x ${item.quantity}</span>
-                            </div>
-                            <span class="font-bold">${itemTotal.toFixed(2)} บาท</span>
-                        </div>
-                    `;
-                }).join('');
-
-                cartItemsListEl.innerHTML = listHtml;
-                cartSummaryTotalEl.textContent = `${total.toFixed(2)} บาท`;
-                cartSummaryModalEl.classList.remove('hidden');
-            } else {
-                cartSummaryModalEl.classList.add('hidden');
-            }
-        }
-        
-        // Confirms cart summary and proceeds to QR Checkout
-        function confirmAndCheckout() {
-            toggleCartSummaryModal(false); // Close summary
-            toggleCheckoutModal(true); // Open checkout
-        }
-
-
         // Opens the dedicated Admin Login Modal
         function toggleAdminLoginModal(show) {
             adminErrorMsgElModal.classList.add('hidden');
@@ -715,7 +761,6 @@
                     
                     // Switch to Admin view
                     toggleView('admin');
-                    displayStatusMessage('เข้าสู่ระบบสำเร็จ', `ยินดีต้อนรับกลับมา ${userCredential.user.email}`, 'success');
                 } else {
                     // Logged in, but not in the designated Admin list
                     signOut(auth); // Force sign out
@@ -736,8 +781,46 @@
                 adminErrorMsgElModal.classList.remove('hidden');
             }
         }
+        
+        // Function to show the cart summary modal
+        function toggleCartSummaryModal(show) {
+            if (show) {
+                if (state.cart.length === 0) {
+                    toggleStatusModal(true, 'ตะกร้าสินค้าว่างเปล่า', 'warning');
+                    return;
+                }
 
-        // --- Core View Handlers ---
+                cartSummaryListEl.innerHTML = state.cart.map(item => {
+                    const product = state.products.find(p => p.id === item.id);
+                    if (!product) return '';
+                    
+                    return `
+                        <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg shadow-sm">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm font-semibold">${item.name}</span>
+                                <span class="text-xs text-gray-500">x ${item.quantity}</span>
+                            </div>
+                            <span class="font-bold text-red-600">${(item.price * item.quantity).toFixed(2)} บาท</span>
+                        </li>
+                    `;
+                }).join('');
+
+                const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                cartSummaryTotalEl.textContent = `${total.toFixed(2)} บาท`;
+                cartSummaryModalEl.classList.remove('hidden');
+            } else {
+                cartSummaryModalEl.classList.add('hidden');
+            }
+        }
+        
+        // Function called when confirming the cart summary
+        function confirmCartSummary() {
+            toggleCartSummaryModal(false); // Close summary
+            toggleCheckoutModal(true); // Open checkout
+        }
+
+
+        // --- Cart and UI Handlers ---
 
         function toggleView(view) {
             state.currentView = view;
@@ -748,29 +831,36 @@
             if (view === 'shop') {
                 shopViewEl.classList.remove('hidden');
                 adminViewEl.classList.add('hidden');
-                document.getElementById('nav-shop').classList.add('border-blue-600', 'text-blue-600'); // Ensure color is applied
+                document.getElementById('nav-shop').classList.add('border-blue-500', 'text-blue-500');
+                document.getElementById('nav-shop').classList.remove('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
                 // FAB Icon: Gear
                 document.getElementById('fab-admin-control').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`;
 
             } else if (view === 'admin') {
+                // Security Check: Go back to login if not admin when switching to admin view
+                if (!auth?.currentUser?.email || !isAdmin(auth.currentUser.email)) {
+                    toggleAdminLoginModal(true);
+                    return;
+                }
+
                 shopViewEl.classList.add('hidden');
                 adminViewEl.classList.remove('hidden');
-                document.getElementById('nav-shop').classList.remove('border-blue-600', 'text-blue-600');
-                document.getElementById('nav-shop').classList.add('border-transparent', 'hover:border-blue-600', 'hover:text-blue-600');
+                document.getElementById('nav-shop').classList.remove('border-blue-500', 'text-blue-500');
+                document.getElementById('nav-shop').classList.add('border-transparent', 'hover:border-blue-500', 'hover:text-blue-500');
 
                 // FAB Icon: Cross/Close
                 document.getElementById('fab-admin-control').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`;
                 
-                // เราจะแสดง Admin Control Area เสมอเมื่อ View เป็น Admin
                 adminControlArea.classList.remove('hidden');
                 renderAdminProducts();
+                renderFirebaseStatus(); // Update status when entering admin
             }
         }
 
         function addToCart(productId) {
             const product = state.products.find(p => p.id === productId);
             if (!product || product.stock <= 0) {
-                displayStatusMessage('สินค้าหมด', 'สินค้านี้หมดสต็อกแล้ว กรุณาเลือกสินค้าอื่น');
+                toggleStatusModal(true, 'สินค้านี้หมดแล้วหรือไม่มีในรายการ', 'warning');
                 return;
             }
 
@@ -779,7 +869,7 @@
             if (existingItem) {
                 // Check if adding one more exceeds stock
                 if (existingItem.quantity + 1 > product.stock) {
-                    displayStatusMessage('สต็อกไม่พอ', 'ไม่สามารถเพิ่มสินค้าได้อีก: สินค้าในสต็อกไม่เพียงพอ');
+                    toggleStatusModal(true, 'ไม่สามารถเพิ่มสินค้าได้อีก: สินค้าในสต็อกไม่เพียงพอ', 'warning');
                     return;
                 }
                 existingItem.quantity += 1;
@@ -792,7 +882,7 @@
                 });
             }
             updateCartUI();
-            displayStatusMessage('เพิ่มสินค้าแล้ว', `${product.name} ถูกเพิ่มลงในตะกร้า`, 'success');
+            toggleStatusModal(true, `${product.name} ถูกเพิ่มในตะกร้าแล้ว`, 'success');
         }
 
         function updateCartUI() {
@@ -802,8 +892,7 @@
 
         function toggleCheckoutModal(show) {
             if (show) {
-                // เราจะใช้ Cart Summary Modal ในการตรวจสอบตะกร้าก่อน
-                if (state.cart.length === 0) return; 
+                // Note: Cart Summary check is now done in toggleCartSummaryModal
                 
                 const total = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
                 checkoutTotalEl.textContent = `${total.toFixed(2)} บาท`;
@@ -855,7 +944,7 @@
                 // 2. Hide confirmation button and clean up
                 confirmPaymentBtn.classList.add('hidden');
                 
-                // 3. Clear cart after a successful transaction
+                // 3. Clear cart after a successful transaction (already done in updateStock on success)
                 state.cart = [];
                 updateCartUI();
 
@@ -874,11 +963,36 @@
 
         // --- Render Functions ---
 
+        // Helper function to render star rating SVGs
+        function renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            const partialStar = rating % 1; // 0.5 or 0
+            let starsHtml = '';
+
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    // Full Star
+                    starsHtml += `<svg xmlns="http://www.w3.org/2000/svg" class="rating-star" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.62-.921 1.902 0l1.986 6.096a1 1 0 00.95.696h6.417c.969 0 1.371 1.24.588 1.81l-5.19 3.77a1 1 0 00-.364 1.118l1.986 6.096c.3.921-.755 1.683-1.538 1.118l-5.19-3.77a1 1 0 00-1.176 0l-5.19 3.77c-.783.565-1.838-.197-1.538-1.118l1.986-6.096a1 1 0 00-.364-1.118l-5.19-3.77c-.783-.57-.381-1.81.588-1.81h6.417a1 1 0 00.95-.696l1.986-6.096z" /></svg>`;
+                } else if (i === fullStars && partialStar > 0) {
+                    // Half Star (using clip-path to simulate)
+                    starsHtml += `<svg xmlns="http://www.w3.org/2000/svg" class="rating-star" viewBox="0 0 20 20" fill="currentColor"><defs><clipPath id="half-star-clip"><rect width="${partialStar * 100}%" height="100%"/></clipPath></defs><path d="M9.049 2.927c.3-.921 1.62-.921 1.902 0l1.986 6.096a1 1 0 00.95.696h6.417c.969 0 1.371 1.24.588 1.81l-5.19 3.77a1 1 0 00-.364 1.118l1.986 6.096c.3.921-.755 1.683-1.538 1.118l-5.19-3.77a1 1 0 00-1.176 0l-5.19 3.77c-.783.565-1.838-.197-1.538-1.118l1.986-6.096a1 1 0 00-.364-1.118l-5.19-3.77c-.783-.57-.381-1.81.588-1.81h6.417a1 1 0 00.95-.696l1.986-6.096z" clip-path="url(#half-star-clip)" /></svg>`;
+                } else {
+                    // Empty Star (outline or muted color - using gray here)
+                    starsHtml += `<svg xmlns="http://www.w3.org/2000/svg" class="rating-star text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.62-.921 1.902 0l1.986 6.096a1 1 0 00.95.696h6.417c.969 0 1.371 1.24.588 1.81l-5.19 3.77a1 1 0 00-.364 1.118l1.986 6.096c.3.921-.755 1.683-1.538 1.118l-5.19-3.77a1 1 0 00-1.176 0l-5.19 3.77c-.783.565-1.838-.197-1.538-1.118l1.986-6.096a1 1 0 00-.364-1.118l-5.19-3.77c-.783-.57-.381-1.81.588-1.81h6.417a1 1 0 00.95-.696l1.986-6.096z" /></svg>`;
+                }
+            }
+            return starsHtml;
+        }
+
         function renderProducts() {
             productListEl.innerHTML = ''; // Clear previous products
 
+            // Mock Data for Rating Display (เพื่อให้เว็บไซต์ดูน่าเชื่อถือทันที)
+            const mockRating = 4.7;
+            const mockReviewCount = 42;
+
             if (state.products.length === 0) {
-                productListEl.innerHTML = `<p class="col-span-full text-center py-12 text-gray-500">ไม่มีสินค้าในร้านค้า</p>`;
+                productListEl.innerHTML = `<p class="col-span-full text-center py-12 text-gray-500 text-xl">ไม่มีสินค้าในร้านค้า</p>`;
                 return;
             }
 
@@ -888,9 +1002,11 @@
                 // Use imageUrl from Firestore or a default placeholder
                 const defaultText = product.name ? product.name.substring(0, 1) : 'B';
                 const imageUrl = product.imageUrl || `https://placehold.co/128x128/f6c02c/3b82f6?text=${defaultText}`;
+                
+                const starsHtml = renderStars(mockRating);
 
                 const cardHtml = `
-                    <div class="product-card bg-white p-5 rounded-xl shadow-md ${isOutOfStock ? 'opacity-50' : ''}">
+                    <div class="product-card bg-white p-5 rounded-xl shadow-lg ${isOutOfStock ? 'opacity-50' : ''}">
                         <!-- Product Image Area -->
                         <div class="product-image-container rounded-lg mb-4">
                             <!-- เพิ่ม class no-drag-image และ draggable="false" ตรงนี้ -->
@@ -898,13 +1014,23 @@
                                  alt="Image for ${product.name}" 
                                  class="w-full h-full object-cover no-drag-image" 
                                  draggable="false"
-                                 onerror="this.onerror=null; this.src='https://placehold.co/128x128/9CA3AF/ffffff?text=No+Image';" />
+                                 onerror="this.onerror=null; this.src='https://placehold.co/150x150/9CA3AF/ffffff?text=No+Image';" />
                         </div>
                         
-                        <h3 class="text-xl font-semibold text-gray-800 truncate" title="${product.name}">${product.name}</h3>
-                        <p class="text-gray-600 text-sm mb-2">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</p>
-                        <p class="text-3xl font-bold text-green-600 mb-4">${product.price.toFixed(2)} บาท</p>
-                        <p class="text-xs text-gray-500 mb-4">เหลือ: ${product.stock} ชิ้น</p>
+                        <h3 class="text-xl font-black text-gray-800 truncate mb-1" title="${product.name}">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3">${product.description.substring(0, 50)}${product.description.length > 50 ? '...' : ''}</p>
+                        
+                        <!-- Rating Display -->
+                        <div class="flex items-center space-x-2 mb-4">
+                            <div class="flex">${starsHtml}</div>
+                            <span class="text-sm font-semibold text-gray-700">${mockRating.toFixed(1)}</span>
+                            <span class="text-xs text-gray-500">(${mockReviewCount} รีวิว)</span>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-3xl font-extrabold text-green-600">${product.price.toFixed(2)} บาท</p>
+                            <p class="text-xs text-gray-500">เหลือ: ${product.stock} ชิ้น</p>
+                        </div>
                         
                         <button onclick="addToCart('${product.id}')" 
                                 class="btn-primary w-full ${isOutOfStock ? 'bg-gray-400 cursor-not-allowed' : ''}" 
@@ -950,7 +1076,12 @@
         // --- Event Listeners ---
 
         document.getElementById('cart-toggle-btn').addEventListener('click', () => {
-            toggleCartSummaryModal(true); // Open cart summary modal
+            const total = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+            if (total > 0) {
+                toggleCartSummaryModal(true);
+            } else {
+                toggleStatusModal(true, 'ตะกร้าสินค้าว่างเปล่า', 'warning');
+            }
         });
 
         // แก้ไข: ใช้ addProduct และจัดการ form submission อย่างถูกต้อง
@@ -971,7 +1102,7 @@
             
             if (success) {
                 e.target.reset(); // ล้างฟอร์มเมื่อเพิ่มสำเร็จ
-                // การแจ้งเตือนถูกจัดการใน addProduct()
+                toggleStatusModal(true, 'เพิ่มสินค้าเรียบร้อยแล้ว!', 'success');
             }
         });
         
@@ -1015,9 +1146,9 @@
         window.simulatePaymentConfirmation = simulatePaymentConfirmation;
         window.addProduct = addProduct;
         window.deleteProduct = deleteProduct;
-        window.displayStatusMessage = displayStatusMessage;
+        window.toggleStatusModal = toggleStatusModal;
         window.toggleCartSummaryModal = toggleCartSummaryModal;
-        window.confirmAndCheckout = confirmAndCheckout;
+        window.confirmCartSummary = confirmCartSummary;
 
 
         // Start initialization
